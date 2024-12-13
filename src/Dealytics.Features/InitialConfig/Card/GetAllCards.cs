@@ -14,7 +14,7 @@ public class GetAllCards
         _fileDialogService = fileDialogService;
     }
 
-    public async Task<List<CardDTO>?> ExecuteSync()
+    public async Task<List<CardDTO>?> ExecuteAsync()
     {
         try
         {

@@ -17,7 +17,6 @@ namespace Dealytics.App.Monitor
         private Dictionary<string, DateTime> cooldowns = new Dictionary<string, DateTime>();
         private int cooldownSeconds = 1;
         private string tituloABuscar;
-        private Label labelDestino;
         private IntPtr lastHandle = IntPtr.Zero;
 
         // Evento para notificar cambios de ventana

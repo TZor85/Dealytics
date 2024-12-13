@@ -4,17 +4,17 @@ namespace Dealytics.App.Maganers;
 
 public class OverlayManager
 {
-    private List<ExternalWindowOverlay> overlays;
+    private List<FrmExternalWindowOverlay> overlays;
 
     public OverlayManager()
     {
-        overlays = new List<ExternalWindowOverlay>();
+        overlays = new List<FrmExternalWindowOverlay>();
     }
 
     public void AddOverlay(string windowTitle)
     {
         //System.Threading.Thread.Sleep(2000);
-        var overlay = new ExternalWindowOverlay(windowTitle);
+        var overlay = new FrmExternalWindowOverlay(windowTitle);
         if (overlay.IsTargetWindowValid())
         {
             overlays.Add(overlay);

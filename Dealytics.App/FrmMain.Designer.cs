@@ -34,24 +34,48 @@
             btnAddOverlay = new Button();
             tpConfig = new TabPage();
             tcConfiguration = new TabControl();
-            tpRegion = new TabPage();
+            tbOcr = new TabPage();
+            btnUpdateRegion = new Button();
+            label4 = new Label();
+            label3 = new Label();
+            label2 = new Label();
+            label1 = new Label();
+            numHeight = new NumericUpDown();
+            numWidth = new NumericUpDown();
+            numPosY = new NumericUpDown();
+            numPosX = new NumericUpDown();
+            pbImagenOcr = new PictureBox();
+            btnCargarImagen = new Button();
+            tvRegions = new TreeView();
+            tbRegion = new TabPage();
+            lbMessageRegions = new Label();
+            btnRegiones = new Button();
             dgvRegiones = new DataGridView();
-            tpCards = new TabPage();
+            tbCards = new TabPage();
+            lbMessageCards = new Label();
+            btnCards = new Button();
             dgvCartas = new DataGridView();
-            tpOcr = new TabPage();
-            tpInit = new TabPage();
-            button1 = new Button();
+            tbInit = new TabPage();
             button3 = new Button();
             button2 = new Button();
+            tbTables = new TabPage();
+            tvTables = new TreeView();
             tcMain.SuspendLayout();
             tpGame.SuspendLayout();
             tpConfig.SuspendLayout();
             tcConfiguration.SuspendLayout();
-            tpRegion.SuspendLayout();
+            tbOcr.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numHeight).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numWidth).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numPosY).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numPosX).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbImagenOcr).BeginInit();
+            tbRegion.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvRegiones).BeginInit();
-            tpCards.SuspendLayout();
+            tbCards.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCartas).BeginInit();
-            tpInit.SuspendLayout();
+            tbInit.SuspendLayout();
+            tbTables.SuspendLayout();
             SuspendLayout();
             // 
             // tcMain
@@ -62,7 +86,7 @@
             tcMain.Location = new Point(0, 0);
             tcMain.Name = "tcMain";
             tcMain.SelectedIndex = 0;
-            tcMain.Size = new Size(1051, 684);
+            tcMain.Size = new Size(1233, 841);
             tcMain.TabIndex = 0;
             // 
             // tpGame
@@ -71,7 +95,7 @@
             tpGame.Location = new Point(4, 24);
             tpGame.Name = "tpGame";
             tpGame.Padding = new Padding(3);
-            tpGame.Size = new Size(1043, 656);
+            tpGame.Size = new Size(1225, 813);
             tpGame.TabIndex = 0;
             tpGame.Text = "Juego";
             tpGame.UseVisualStyleBackColor = true;
@@ -91,93 +115,246 @@
             tpConfig.Location = new Point(4, 24);
             tpConfig.Name = "tpConfig";
             tpConfig.Padding = new Padding(3);
-            tpConfig.Size = new Size(1043, 656);
+            tpConfig.Size = new Size(1225, 813);
             tpConfig.TabIndex = 1;
             tpConfig.Text = "Configuración";
             tpConfig.UseVisualStyleBackColor = true;
             // 
             // tcConfiguration
             // 
-            tcConfiguration.Controls.Add(tpRegion);
-            tcConfiguration.Controls.Add(tpCards);
-            tcConfiguration.Controls.Add(tpOcr);
-            tcConfiguration.Controls.Add(tpInit);
+            tcConfiguration.Controls.Add(tbOcr);
+            tcConfiguration.Controls.Add(tbRegion);
+            tcConfiguration.Controls.Add(tbCards);
+            tcConfiguration.Controls.Add(tbTables);
+            tcConfiguration.Controls.Add(tbInit);
             tcConfiguration.Dock = DockStyle.Fill;
             tcConfiguration.Location = new Point(3, 3);
             tcConfiguration.Name = "tcConfiguration";
             tcConfiguration.SelectedIndex = 0;
-            tcConfiguration.Size = new Size(1037, 650);
+            tcConfiguration.Size = new Size(1219, 807);
             tcConfiguration.TabIndex = 0;
             // 
-            // tpRegion
+            // tbOcr
             // 
-            tpRegion.Controls.Add(dgvRegiones);
-            tpRegion.Location = new Point(4, 24);
-            tpRegion.Name = "tpRegion";
-            tpRegion.Padding = new Padding(3);
-            tpRegion.Size = new Size(1029, 622);
-            tpRegion.TabIndex = 0;
-            tpRegion.Text = "Regiones";
-            tpRegion.UseVisualStyleBackColor = true;
+            tbOcr.Controls.Add(btnUpdateRegion);
+            tbOcr.Controls.Add(label4);
+            tbOcr.Controls.Add(label3);
+            tbOcr.Controls.Add(label2);
+            tbOcr.Controls.Add(label1);
+            tbOcr.Controls.Add(numHeight);
+            tbOcr.Controls.Add(numWidth);
+            tbOcr.Controls.Add(numPosY);
+            tbOcr.Controls.Add(numPosX);
+            tbOcr.Controls.Add(pbImagenOcr);
+            tbOcr.Controls.Add(btnCargarImagen);
+            tbOcr.Controls.Add(tvRegions);
+            tbOcr.Location = new Point(4, 24);
+            tbOcr.Name = "tbOcr";
+            tbOcr.Size = new Size(1211, 779);
+            tbOcr.TabIndex = 2;
+            tbOcr.Text = "OCR";
+            tbOcr.UseVisualStyleBackColor = true;
+            // 
+            // btnUpdateRegion
+            // 
+            btnUpdateRegion.Location = new Point(1069, 12);
+            btnUpdateRegion.Name = "btnUpdateRegion";
+            btnUpdateRegion.Size = new Size(75, 23);
+            btnUpdateRegion.TabIndex = 12;
+            btnUpdateRegion.Text = "Actualizar";
+            btnUpdateRegion.UseVisualStyleBackColor = true;
+            btnUpdateRegion.Click += btnUpdateRegion_Click;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(815, 18);
+            label4.Name = "label4";
+            label4.Size = new Size(46, 15);
+            label4.TabIndex = 11;
+            label4.Text = "Height:";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(604, 18);
+            label3.Name = "label3";
+            label3.Size = new Size(42, 15);
+            label3.TabIndex = 10;
+            label3.Text = "Width:";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(365, 18);
+            label2.Name = "label2";
+            label2.Size = new Size(17, 15);
+            label2.TabIndex = 9;
+            label2.Text = "Y:";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(181, 16);
+            label1.Name = "label1";
+            label1.Size = new Size(17, 15);
+            label1.TabIndex = 8;
+            label1.Text = "X:";
+            // 
+            // numHeight
+            // 
+            numHeight.Location = new Point(867, 14);
+            numHeight.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numHeight.Name = "numHeight";
+            numHeight.Size = new Size(120, 23);
+            numHeight.TabIndex = 7;
+            numHeight.ValueChanged += NumericUpDown_ValueChanged;
+            // 
+            // numWidth
+            // 
+            numWidth.Location = new Point(652, 14);
+            numWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numWidth.Name = "numWidth";
+            numWidth.Size = new Size(120, 23);
+            numWidth.TabIndex = 6;
+            numWidth.ValueChanged += NumericUpDown_ValueChanged;
+            // 
+            // numPosY
+            // 
+            numPosY.Location = new Point(388, 14);
+            numPosY.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numPosY.Name = "numPosY";
+            numPosY.Size = new Size(120, 23);
+            numPosY.TabIndex = 5;
+            numPosY.ValueChanged += NumericUpDown_ValueChanged;
+            // 
+            // numPosX
+            // 
+            numPosX.Location = new Point(204, 14);
+            numPosX.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numPosX.Name = "numPosX";
+            numPosX.Size = new Size(120, 23);
+            numPosX.TabIndex = 4;
+            numPosX.ValueChanged += NumericUpDown_ValueChanged;
+            // 
+            // pbImagenOcr
+            // 
+            pbImagenOcr.Location = new Point(181, 49);
+            pbImagenOcr.Name = "pbImagenOcr";
+            pbImagenOcr.Size = new Size(1025, 727);
+            pbImagenOcr.SizeMode = PictureBoxSizeMode.AutoSize;
+            pbImagenOcr.TabIndex = 2;
+            pbImagenOcr.TabStop = false;
+            pbImagenOcr.Paint += pbImagenOcr_Paint;
+            // 
+            // btnCargarImagen
+            // 
+            btnCargarImagen.Location = new Point(3, 14);
+            btnCargarImagen.Name = "btnCargarImagen";
+            btnCargarImagen.Size = new Size(75, 23);
+            btnCargarImagen.TabIndex = 1;
+            btnCargarImagen.Text = "Cargar";
+            btnCargarImagen.UseVisualStyleBackColor = true;
+            btnCargarImagen.Click += btnCargarImagen_Click;
+            // 
+            // tvRegions
+            // 
+            tvRegions.Location = new Point(0, 49);
+            tvRegions.Name = "tvRegions";
+            tvRegions.Size = new Size(175, 727);
+            tvRegions.TabIndex = 0;
+            tvRegions.DoubleClick += tvRegions_DoubleClick;
+            // 
+            // tbRegion
+            // 
+            tbRegion.Controls.Add(lbMessageRegions);
+            tbRegion.Controls.Add(btnRegiones);
+            tbRegion.Controls.Add(dgvRegiones);
+            tbRegion.Location = new Point(4, 24);
+            tbRegion.Name = "tbRegion";
+            tbRegion.Padding = new Padding(3);
+            tbRegion.Size = new Size(1211, 779);
+            tbRegion.TabIndex = 0;
+            tbRegion.Text = "Regiones";
+            tbRegion.UseVisualStyleBackColor = true;
+            // 
+            // lbMessageRegions
+            // 
+            lbMessageRegions.AutoSize = true;
+            lbMessageRegions.Location = new Point(87, 12);
+            lbMessageRegions.Name = "lbMessageRegions";
+            lbMessageRegions.Size = new Size(0, 15);
+            lbMessageRegions.TabIndex = 5;
+            // 
+            // btnRegiones
+            // 
+            btnRegiones.Location = new Point(6, 8);
+            btnRegiones.Name = "btnRegiones";
+            btnRegiones.Size = new Size(75, 23);
+            btnRegiones.TabIndex = 4;
+            btnRegiones.Text = "Regiones";
+            btnRegiones.UseVisualStyleBackColor = true;
+            btnRegiones.Click += btnRegiones_Click;
             // 
             // dgvRegiones
             // 
             dgvRegiones.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvRegiones.Dock = DockStyle.Fill;
-            dgvRegiones.Location = new Point(3, 3);
+            dgvRegiones.Dock = DockStyle.Bottom;
+            dgvRegiones.Location = new Point(3, 68);
             dgvRegiones.Name = "dgvRegiones";
-            dgvRegiones.Size = new Size(1023, 616);
+            dgvRegiones.Size = new Size(1205, 708);
             dgvRegiones.TabIndex = 0;
             // 
-            // tpCards
+            // tbCards
             // 
-            tpCards.Controls.Add(dgvCartas);
-            tpCards.Location = new Point(4, 24);
-            tpCards.Name = "tpCards";
-            tpCards.Padding = new Padding(3);
-            tpCards.Size = new Size(1029, 622);
-            tpCards.TabIndex = 1;
-            tpCards.Text = "Cartas";
-            tpCards.UseVisualStyleBackColor = true;
+            tbCards.Controls.Add(lbMessageCards);
+            tbCards.Controls.Add(btnCards);
+            tbCards.Controls.Add(dgvCartas);
+            tbCards.Location = new Point(4, 24);
+            tbCards.Name = "tbCards";
+            tbCards.Padding = new Padding(3);
+            tbCards.Size = new Size(1211, 779);
+            tbCards.TabIndex = 1;
+            tbCards.Text = "Cartas";
+            tbCards.UseVisualStyleBackColor = true;
+            // 
+            // lbMessageCards
+            // 
+            lbMessageCards.AutoSize = true;
+            lbMessageCards.Location = new Point(87, 12);
+            lbMessageCards.Name = "lbMessageCards";
+            lbMessageCards.Size = new Size(0, 15);
+            lbMessageCards.TabIndex = 7;
+            // 
+            // btnCards
+            // 
+            btnCards.Location = new Point(6, 8);
+            btnCards.Name = "btnCards";
+            btnCards.Size = new Size(75, 23);
+            btnCards.TabIndex = 6;
+            btnCards.Text = "Cartas";
+            btnCards.UseVisualStyleBackColor = true;
+            btnCards.Click += btnCards_Click;
             // 
             // dgvCartas
             // 
             dgvCartas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvCartas.Dock = DockStyle.Fill;
-            dgvCartas.Location = new Point(3, 3);
+            dgvCartas.Dock = DockStyle.Bottom;
+            dgvCartas.Location = new Point(3, 68);
             dgvCartas.Name = "dgvCartas";
-            dgvCartas.Size = new Size(1023, 616);
+            dgvCartas.Size = new Size(1205, 708);
             dgvCartas.TabIndex = 0;
             // 
-            // tpOcr
+            // tbInit
             // 
-            tpOcr.Location = new Point(4, 24);
-            tpOcr.Name = "tpOcr";
-            tpOcr.Size = new Size(1029, 622);
-            tpOcr.TabIndex = 2;
-            tpOcr.Text = "OCR";
-            tpOcr.UseVisualStyleBackColor = true;
-            // 
-            // tpInit
-            // 
-            tpInit.Controls.Add(button1);
-            tpInit.Controls.Add(button3);
-            tpInit.Controls.Add(button2);
-            tpInit.Location = new Point(4, 24);
-            tpInit.Name = "tpInit";
-            tpInit.Size = new Size(1029, 622);
-            tpInit.TabIndex = 3;
-            tpInit.Text = "Init Data";
-            tpInit.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            button1.Location = new Point(269, 209);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 3;
-            button1.Text = "Regiones";
-            button1.UseVisualStyleBackColor = true;
+            tbInit.Controls.Add(button3);
+            tbInit.Controls.Add(button2);
+            tbInit.Location = new Point(4, 24);
+            tbInit.Name = "tbInit";
+            tbInit.Size = new Size(1211, 779);
+            tbInit.TabIndex = 3;
+            tbInit.Text = "Init Data";
+            tbInit.UseVisualStyleBackColor = true;
             // 
             // button3
             // 
@@ -197,11 +374,29 @@
             button2.Text = "button2";
             button2.UseVisualStyleBackColor = true;
             // 
+            // tbTables
+            // 
+            tbTables.Controls.Add(tvTables);
+            tbTables.Location = new Point(4, 24);
+            tbTables.Name = "tbTables";
+            tbTables.Size = new Size(1211, 779);
+            tbTables.TabIndex = 4;
+            tbTables.Text = "Tablas";
+            tbTables.UseVisualStyleBackColor = true;
+            // 
+            // tvTables
+            // 
+            tvTables.Dock = DockStyle.Left;
+            tvTables.Location = new Point(0, 0);
+            tvTables.Name = "tvTables";
+            tvTables.Size = new Size(175, 779);
+            tvTables.TabIndex = 1;
+            // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1051, 684);
+            ClientSize = new Size(1233, 841);
             Controls.Add(tcMain);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmMain";
@@ -210,11 +405,21 @@
             tpGame.ResumeLayout(false);
             tpConfig.ResumeLayout(false);
             tcConfiguration.ResumeLayout(false);
-            tpRegion.ResumeLayout(false);
+            tbOcr.ResumeLayout(false);
+            tbOcr.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numPosY).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numPosX).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbImagenOcr).EndInit();
+            tbRegion.ResumeLayout(false);
+            tbRegion.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvRegiones).EndInit();
-            tpCards.ResumeLayout(false);
+            tbCards.ResumeLayout(false);
+            tbCards.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCartas).EndInit();
-            tpInit.ResumeLayout(false);
+            tbInit.ResumeLayout(false);
+            tbTables.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -224,15 +429,32 @@
         private TabPage tpGame;
         private TabPage tpConfig;
         private TabControl tcConfiguration;
-        private TabPage tpRegion;
-        private TabPage tpCards;
-        private TabPage tpOcr;
-        private TabPage tpInit;
+        private TabPage tbRegion;
+        private TabPage tbCards;
+        private TabPage tbOcr;
+        private TabPage tbInit;
         private Button button3;
         private Button button2;
         private DataGridView dgvRegiones;
         private DataGridView dgvCartas;
-        private Button button1;
         private Button btnAddOverlay;
+        private Button btnRegiones;
+        private Label lbMessageRegions;
+        private Label lbMessageCards;
+        private Button btnCards;
+        private TreeView tvRegions;
+        private Button btnCargarImagen;
+        private PictureBox pbImagenOcr;
+        private NumericUpDown numHeight;
+        private NumericUpDown numWidth;
+        private NumericUpDown numPosY;
+        private NumericUpDown numPosX;
+        private Label label4;
+        private Label label3;
+        private Label label2;
+        private Label label1;
+        private Button btnUpdateRegion;
+        private TabPage tbTables;
+        private TreeView tvTables;
     }
 }
