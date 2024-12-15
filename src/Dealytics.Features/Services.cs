@@ -1,5 +1,6 @@
 ﻿using Dealytics.Features.Action;
 using Dealytics.Features.Action.Create;
+using Dealytics.Features.Action.CreateAll;
 using Dealytics.Features.Card;
 using Dealytics.Features.Card.CreateAll;
 using Dealytics.Features.InitialConfig.Action;
@@ -25,6 +26,7 @@ namespace Dealytics.Features
             .AddScoped<CardUseCases>()
 
             .AddScoped<CreateAction>()
+            .AddScoped<CreateAllActions>()
             .AddScoped<ActionUseCases>()
 
             .AddScoped<GetAllRegions>()

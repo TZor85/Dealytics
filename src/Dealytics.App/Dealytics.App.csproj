@@ -18,9 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Dealytics.Domain\Dealytics.Domain.csproj" />
-    <ProjectReference Include="..\src\Dealytics.Features\Dealytics.Features.csproj" />
-    <ProjectReference Include="..\src\Dealytics.Infrastructure\Dealytics.Infrastructure.csproj" />
+    <ProjectReference Include="..\Dealytics.Domain\Dealytics.Domain.csproj" />
+    <ProjectReference Include="..\Dealytics.Features\Dealytics.Features.csproj" />
+    <ProjectReference Include="..\Dealytics.Infrastructure\Dealytics.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

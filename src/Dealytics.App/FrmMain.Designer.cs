@@ -55,11 +55,19 @@
             lbMessageCards = new Label();
             btnCards = new Button();
             dgvCartas = new DataGridView();
+            tbTables = new TabPage();
+            panel1 = new Panel();
+            tvTables = new TreeView();
+            dgvHands = new DataGridView();
+            Name = new DataGridViewTextBoxColumn();
+            Suited = new DataGridViewCheckBoxColumn();
+            Action = new DataGridViewTextBoxColumn();
+            Percentage = new DataGridViewTextBoxColumn();
             tbInit = new TabPage();
             button3 = new Button();
             button2 = new Button();
-            tbTables = new TabPage();
-            tvTables = new TreeView();
+            lbMessageHands = new Label();
+            btnHands = new Button();
             tcMain.SuspendLayout();
             tpGame.SuspendLayout();
             tpConfig.SuspendLayout();
@@ -74,8 +82,10 @@
             ((System.ComponentModel.ISupportInitialize)dgvRegiones).BeginInit();
             tbCards.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCartas).BeginInit();
-            tbInit.SuspendLayout();
             tbTables.SuspendLayout();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvHands).BeginInit();
+            tbInit.SuspendLayout();
             SuspendLayout();
             // 
             // tcMain
@@ -300,9 +310,9 @@
             // 
             dgvRegiones.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvRegiones.Dock = DockStyle.Bottom;
-            dgvRegiones.Location = new Point(3, 68);
+            dgvRegiones.Location = new Point(3, 37);
             dgvRegiones.Name = "dgvRegiones";
-            dgvRegiones.Size = new Size(1205, 708);
+            dgvRegiones.Size = new Size(1205, 739);
             dgvRegiones.TabIndex = 0;
             // 
             // tbCards
@@ -340,10 +350,81 @@
             // 
             dgvCartas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvCartas.Dock = DockStyle.Bottom;
-            dgvCartas.Location = new Point(3, 68);
+            dgvCartas.Location = new Point(3, 37);
             dgvCartas.Name = "dgvCartas";
-            dgvCartas.Size = new Size(1205, 708);
+            dgvCartas.Size = new Size(1205, 739);
             dgvCartas.TabIndex = 0;
+            // 
+            // tbTables
+            // 
+            tbTables.Controls.Add(lbMessageHands);
+            tbTables.Controls.Add(btnHands);
+            tbTables.Controls.Add(panel1);
+            tbTables.Location = new Point(4, 24);
+            tbTables.Name = "tbTables";
+            tbTables.Size = new Size(1211, 779);
+            tbTables.TabIndex = 4;
+            tbTables.Text = "Manos";
+            tbTables.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(tvTables);
+            panel1.Controls.Add(dgvHands);
+            panel1.Location = new Point(1, 40);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(1210, 738);
+            panel1.TabIndex = 3;
+            // 
+            // tvTables
+            // 
+            tvTables.Dock = DockStyle.Left;
+            tvTables.Location = new Point(0, 0);
+            tvTables.Name = "tvTables";
+            tvTables.Size = new Size(175, 738);
+            tvTables.TabIndex = 4;
+            // 
+            // dgvHands
+            // 
+            dgvHands.AllowUserToAddRows = false;
+            dgvHands.AllowUserToDeleteRows = false;
+            dgvHands.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvHands.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvHands.Columns.AddRange(new DataGridViewColumn[] { Name, Suited, Action, Percentage });
+            dgvHands.Dock = DockStyle.Right;
+            dgvHands.EnableHeadersVisualStyles = false;
+            dgvHands.Location = new Point(174, 0);
+            dgvHands.MultiSelect = false;
+            dgvHands.Name = "dgvHands";
+            dgvHands.ReadOnly = true;
+            dgvHands.RowHeadersVisible = false;
+            dgvHands.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvHands.Size = new Size(1036, 738);
+            dgvHands.TabIndex = 3;
+            // 
+            // Name
+            // 
+            Name.HeaderText = "Mano";
+            Name.Name = "Name";
+            Name.ReadOnly = true;
+            // 
+            // Suited
+            // 
+            Suited.HeaderText = "Suited";
+            Suited.Name = "Suited";
+            Suited.ReadOnly = true;
+            // 
+            // Action
+            // 
+            Action.HeaderText = "Acción";
+            Action.Name = "Action";
+            Action.ReadOnly = true;
+            // 
+            // Percentage
+            // 
+            Percentage.HeaderText = "Porcentaje";
+            Percentage.Name = "Percentage";
+            Percentage.ReadOnly = true;
             // 
             // tbInit
             // 
@@ -374,23 +455,23 @@
             button2.Text = "button2";
             button2.UseVisualStyleBackColor = true;
             // 
-            // tbTables
+            // lbMessageHands
             // 
-            tbTables.Controls.Add(tvTables);
-            tbTables.Location = new Point(4, 24);
-            tbTables.Name = "tbTables";
-            tbTables.Size = new Size(1211, 779);
-            tbTables.TabIndex = 4;
-            tbTables.Text = "Tablas";
-            tbTables.UseVisualStyleBackColor = true;
+            lbMessageHands.AutoSize = true;
+            lbMessageHands.Location = new Point(84, 15);
+            lbMessageHands.Name = "lbMessageHands";
+            lbMessageHands.Size = new Size(0, 15);
+            lbMessageHands.TabIndex = 9;
             // 
-            // tvTables
+            // btnHands
             // 
-            tvTables.Dock = DockStyle.Left;
-            tvTables.Location = new Point(0, 0);
-            tvTables.Name = "tvTables";
-            tvTables.Size = new Size(175, 779);
-            tvTables.TabIndex = 1;
+            btnHands.Location = new Point(3, 11);
+            btnHands.Name = "btnHands";
+            btnHands.Size = new Size(75, 23);
+            btnHands.TabIndex = 8;
+            btnHands.Text = "Manos";
+            btnHands.UseVisualStyleBackColor = true;
+            btnHands.Click += btnHands_Click;
             // 
             // FrmMain
             // 
@@ -399,7 +480,7 @@
             ClientSize = new Size(1233, 841);
             Controls.Add(tcMain);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Name = "FrmMain";
+            //Name = "FrmMain";
             Text = "DEALYTICS";
             tcMain.ResumeLayout(false);
             tpGame.ResumeLayout(false);
@@ -418,8 +499,11 @@
             tbCards.ResumeLayout(false);
             tbCards.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCartas).EndInit();
-            tbInit.ResumeLayout(false);
             tbTables.ResumeLayout(false);
+            tbTables.PerformLayout();
+            panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvHands).EndInit();
+            tbInit.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -455,6 +539,14 @@
         private Label label1;
         private Button btnUpdateRegion;
         private TabPage tbTables;
+        private Panel panel1;
         private TreeView tvTables;
+        private DataGridView dgvHands;
+        private DataGridViewTextBoxColumn Name;
+        private DataGridViewCheckBoxColumn Suited;
+        private DataGridViewTextBoxColumn Action;
+        private DataGridViewTextBoxColumn Percentage;
+        private Label lbMessageHands;
+        private Button btnHands;
     }
 }

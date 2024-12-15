@@ -4,6 +4,9 @@ using Dealytics.App.Overlays;
 using Dealytics.App.Services;
 using Dealytics.Domain.Entities;
 using Dealytics.Domain.Mappers;
+using Dealytics.Features.Action;
+using Dealytics.Features.Action.Create;
+using Dealytics.Features.Action.CreateAll;
 using Dealytics.Features.Card;
 using Dealytics.Features.Card.CreateAll;
 using Dealytics.Features.InitialConfig.Card;
@@ -23,11 +26,11 @@ public partial class FrmMain : Form
     private OverlayManager overlayManager;
     private WindowMonitor monitor;
 
-    private GetAllRegions _allRegions;
+    #region UseCases
     private RegionUseCases _regionUseCases;
-
-    private GetAllCards _allCards;
     private CardUseCases _cardUseCases;
+    private ActionUseCases _actionUseCases;
+    #endregion
 
     private List<RegionCategory> _regionCateory;
     private Rectangle currentRectangle;
@@ -47,13 +50,17 @@ public partial class FrmMain : Form
 
     private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
-    public FrmMain(IDocumentStore store)
+    public FrmMain(IDocumentStore store, RegionUseCases regionUseCases, CardUseCases cardUseCases, ActionUseCases actionUseCases)
     {
         InitializeComponent();
         _store = store;
         overlayManager = new OverlayManager();
         monitor = new WindowMonitor("poker", 1);
         windowCaptureService = new WindowCaptureService();
+        
+        _regionUseCases = regionUseCases;
+        _cardUseCases = cardUseCases;
+        _actionUseCases = actionUseCases;
 
         monitor.OnWindowChanged += Monitor_OnWindowChanged;
 
@@ -84,8 +91,10 @@ public partial class FrmMain : Form
                 dgvCartas.DataSource = dataCards;
                 dgvRegiones.DataSource = regions;
                 _regionCateory = dataRegions.ToList();
-
                 LoadTreeView(dataRegions.ToList());
+
+                var dataActions = await session.Query<Domain.Entities.Action>().ToListAsync();
+                LoadTvHands(dataActions.ToList());
 
             }
         }
@@ -131,7 +140,7 @@ public partial class FrmMain : Form
         try
         {
             var regions = new List<RegionCategory>();
-            var regionsDto = await Task.Run(async () => await _allRegions.Executesync());
+            var regionsDto = await Task.Run(async () => await _regionUseCases.GetAllRegions.Executesync());
 
             if (regionsDto != null)
             {
@@ -163,7 +172,7 @@ public partial class FrmMain : Form
         try
         {
             var cards = new List<Card>();
-            var cardsDto = await Task.Run(async () => await _allCards.ExecuteAsync());
+            var cardsDto = await Task.Run(async () => await _cardUseCases.GetAllCards.ExecuteAsync());
 
             if (cardsDto != null)
             {
@@ -190,6 +199,34 @@ public partial class FrmMain : Form
         }
     }
 
+    private async void btnHands_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            var actions = new List<Domain.Entities.Action>();
+            var actionsDto = await Task.Run(async () => await _actionUseCases.GetAllActions.ExecuteAsync());
+
+            if (actionsDto != null)
+            {
+                actions.Add(actionsDto.ToEntity());
+                await Task.Run(async () =>
+                {
+                    await _actionUseCases.CreateAllActions.ExecuteAsync(new CreateAllActionsRequest(actions));
+                });
+
+                lbMessageHands.Text = "Manos inicializadas correctamente";
+            }
+            else
+            {
+                lbMessageHands.Text = "No se encontraron manos para inicializar.";
+            }
+        }
+        catch (Exception ex)
+        {
+            lbMessageHands.Text = $"Error al inicializar manos: {ex.Message}";
+        }
+    }
+
     private void LoadTreeView(List<RegionCategory> categories)
     {
         tvRegions.Nodes.Clear();
@@ -207,6 +244,17 @@ public partial class FrmMain : Form
                     categoryNode.Nodes.Add(region.Name); // Asumiendo que Region tiene una propiedad Name
                 }
             }
+        }
+    }
+
+    //TODO: Método que carga las manos en el TreeView
+    private void LoadTvHands(List<Domain.Entities.Action> actions)
+    {
+        tvTables.Nodes.Clear();
+
+        foreach (var action in actions)
+        { 
+            
         }
     }
 
@@ -301,6 +349,8 @@ public partial class FrmMain : Form
             lbMessageRegions.Text = "Seleccione una región válida para actualizar.";
         }
     }
+
+    
 }
 
 

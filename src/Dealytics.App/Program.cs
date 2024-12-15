@@ -1,3 +1,5 @@
+using Dealytics.App.Services;
+using Dealytics.Features;
 using Dealytics.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,8 @@ namespace Dealytics.App
                 {
                     // Agregar configuración de base de datos
                     services.AddDataBase(context.Configuration, true);
+                    services.AddUseCases();
+                    services.AddScoped<IFileDialogService, WindowsFileDialogService>();
 
                     // Registrar tu formulario principal
                     services.AddTransient<FrmMain>();
