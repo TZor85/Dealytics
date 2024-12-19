@@ -89,7 +89,7 @@ public class ImageCropperService
         }
     }
 
-    public bool CompareCardsBase64(string base64Image1, string base64Image2)
+    public double CompareCardsBase64(string base64Image1, string base64Image2)
     {
         try
         {
@@ -98,7 +98,7 @@ public class ImageCropperService
             {
                 // Verificar dimensiones
                 if (img1.Width != img2.Width || img1.Height != img2.Height)
-                    return false;
+                    return 0;
 
                 using (Bitmap bmp1 = new Bitmap(img1))
                 using (Bitmap bmp2 = new Bitmap(img2))
@@ -128,7 +128,7 @@ public class ImageCropperService
                     double porcentajeSimilitud = (double)pixelesSimilares / totalPixeles * 100;
 
                     // Para cartas de póker, podemos usar un umbral más bajo
-                    return porcentajeSimilitud >= 90; // 90% de similitud es suficiente
+                    return porcentajeSimilitud >= 90 ? porcentajeSimilitud : 0; // 90% de similitud es suficiente
                 }
             }
         }

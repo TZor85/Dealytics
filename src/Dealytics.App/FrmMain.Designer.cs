@@ -35,7 +35,6 @@
             tpConfig = new TabPage();
             tcConfiguration = new TabControl();
             tbOcr = new TabPage();
-            tbCarta = new TextBox();
             pbCartas = new PictureBox();
             btnCard = new Button();
             lbHexadecimal = new Label();
@@ -155,7 +154,6 @@
             // 
             // tbOcr
             // 
-            tbOcr.Controls.Add(tbCarta);
             tbOcr.Controls.Add(pbCartas);
             tbOcr.Controls.Add(btnCard);
             tbOcr.Controls.Add(lbHexadecimal);
@@ -184,16 +182,9 @@
             tbOcr.Text = "OCR";
             tbOcr.UseVisualStyleBackColor = true;
             // 
-            // tbCarta
-            // 
-            tbCarta.Location = new Point(609, 53);
-            tbCarta.Name = "tbCarta";
-            tbCarta.Size = new Size(100, 23);
-            tbCarta.TabIndex = 21;
-            // 
             // pbCartas
             // 
-            pbCartas.Location = new Point(720, 8);
+            pbCartas.Location = new Point(828, 8);
             pbCartas.Name = "pbCartas";
             pbCartas.Size = new Size(20, 35);
             pbCartas.TabIndex = 20;
@@ -201,7 +192,7 @@
             // 
             // btnCard
             // 
-            btnCard.Location = new Point(634, 14);
+            btnCard.Location = new Point(742, 14);
             btnCard.Name = "btnCard";
             btnCard.Size = new Size(75, 23);
             btnCard.TabIndex = 19;
@@ -212,14 +203,14 @@
             // lbHexadecimal
             // 
             lbHexadecimal.AutoSize = true;
-            lbHexadecimal.Location = new Point(645, 18);
+            lbHexadecimal.Location = new Point(570, 19);
             lbHexadecimal.Name = "lbHexadecimal";
             lbHexadecimal.Size = new Size(0, 15);
             lbHexadecimal.TabIndex = 18;
             // 
             // pbColorDebug
             // 
-            pbColorDebug.Location = new Point(595, 15);
+            pbColorDebug.Location = new Point(540, 16);
             pbColorDebug.Name = "pbColorDebug";
             pbColorDebug.Size = new Size(20, 20);
             pbColorDebug.TabIndex = 17;
@@ -227,7 +218,7 @@
             // 
             // btnColor
             // 
-            btnColor.Location = new Point(515, 14);
+            btnColor.Location = new Point(459, 15);
             btnColor.Name = "btnColor";
             btnColor.Size = new Size(75, 23);
             btnColor.TabIndex = 16;
@@ -273,7 +264,7 @@
             // 
             // pbImageDebug
             // 
-            pbImageDebug.Location = new Point(357, 14);
+            pbImageDebug.Location = new Point(283, 12);
             pbImageDebug.Name = "pbImageDebug";
             pbImageDebug.Size = new Size(150, 25);
             pbImageDebug.SizeMode = PictureBoxSizeMode.AutoSize;
@@ -283,14 +274,14 @@
             // lbResultOcr
             // 
             lbResultOcr.AutoSize = true;
-            lbResultOcr.Location = new Point(261, 18);
+            lbResultOcr.Location = new Point(209, 18);
             lbResultOcr.Name = "lbResultOcr";
             lbResultOcr.Size = new Size(0, 15);
             lbResultOcr.TabIndex = 12;
             // 
             // btnTextoOcr
             // 
-            btnTextoOcr.Location = new Point(184, 14);
+            btnTextoOcr.Location = new Point(128, 14);
             btnTextoOcr.Name = "btnTextoOcr";
             btnTextoOcr.Size = new Size(75, 23);
             btnTextoOcr.TabIndex = 2;
@@ -301,25 +292,25 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(1092, 18);
+            label4.Location = new Point(1119, 18);
             label4.Name = "label4";
-            label4.Size = new Size(46, 15);
+            label4.Size = new Size(19, 15);
             label4.TabIndex = 11;
-            label4.Text = "Height:";
+            label4.Text = "H:";
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(981, 18);
+            label3.Location = new Point(1028, 18);
             label3.Name = "label3";
-            label3.Size = new Size(42, 15);
+            label3.Size = new Size(21, 15);
             label3.TabIndex = 10;
-            label3.Text = "Width:";
+            label3.Text = "W:";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(893, 18);
+            label2.Location = new Point(944, 18);
             label2.Name = "label2";
             label2.Size = new Size(17, 15);
             label2.TabIndex = 9;
@@ -328,7 +319,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(805, 18);
+            label1.Location = new Point(856, 18);
             label1.Name = "label1";
             label1.Size = new Size(17, 15);
             label1.TabIndex = 8;
@@ -345,7 +336,7 @@
             // 
             // numWidth
             // 
-            numWidth.Location = new Point(1026, 14);
+            numWidth.Location = new Point(1053, 14);
             numWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             numWidth.Name = "numWidth";
             numWidth.Size = new Size(60, 23);
@@ -354,7 +345,7 @@
             // 
             // numPosY
             // 
-            numPosY.Location = new Point(913, 14);
+            numPosY.Location = new Point(964, 14);
             numPosY.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             numPosY.Name = "numPosY";
             numPosY.Size = new Size(60, 23);
@@ -363,7 +354,7 @@
             // 
             // numPosX
             // 
-            numPosX.Location = new Point(825, 14);
+            numPosX.Location = new Point(876, 14);
             numPosX.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             numPosX.Name = "numPosX";
             numPosX.Size = new Size(60, 23);
@@ -655,6 +646,5 @@
         private Label lbHexadecimal;
         private Button btnCard;
         private PictureBox pbCartas;
-        private TextBox tbCarta;
     }
 }

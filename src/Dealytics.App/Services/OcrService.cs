@@ -118,7 +118,7 @@ public class OcrService
 
     // ...
 
-    public OcrResult ExtractTextFromRegionAndDebug(Image sourceImage, int x, int y, int width, int height, double porcentaje = 0.87, bool onlyNumber = false)
+    public OcrResult ExtractTextFromRegionAndDebug(Image sourceImage, int x, int y, int width, int height, double porcentaje = 0, bool onlyNumber = false)
     {
         try
         {
@@ -138,7 +138,7 @@ public class OcrService
             // Procesar la imagen
             using var processedBitmap = new SKBitmap(width, height);
 
-            //porcentaje = 0.28;
+            //porcentaje = 0.33;
 
             // Umbralización pixel por pixel
             for (int i = 0; i < width; i++)

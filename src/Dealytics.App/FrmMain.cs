@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using Dealytics.App.Maganers;
 using Dealytics.App.Monitor;
 using Dealytics.App.Overlays;
@@ -12,6 +13,7 @@ using Dealytics.Features.Regions;
 using Dealytics.Features.Regions.CreateAll;
 using Dealytics.Features.Regions.Update;
 using Marten;
+using NetTopologySuite.Geometries;
 using PokerVisionAI.App.Services;
 using SkiaSharp;
 using System.Runtime.InteropServices;
@@ -52,6 +54,8 @@ public partial class FrmMain : Form
     private int currentImageIndex = -1;
     private string currentDirectory;
     #endregion
+
+    private Result<List<Domain.Dtos.CardDTO>?> _cardsImages;
 
     private Dictionary<nint, FrmExternalWindowOverlay> activeOverlays = new Dictionary<nint, FrmExternalWindowOverlay>();
 
@@ -527,7 +531,8 @@ public partial class FrmMain : Form
                         _selectedRegion.PosY,
                         _selectedRegion.Width,
                         _selectedRegion.Height,
-                        _selectedRegion.Umbral.GetValueOrDefault(), false);
+                        _selectedRegion.Umbral.GetValueOrDefault(),
+                        _selectedRegion.IsOnlyNumber.GetValueOrDefault());
 
             if (string.IsNullOrEmpty(ocr.Text))
             {
@@ -537,7 +542,8 @@ public partial class FrmMain : Form
                         _selectedRegion.PosY,
                         _selectedRegion.Width,
                         _selectedRegion.Height,
-                        _selectedRegion.InactiveUmbral.GetValueOrDefault(), false);
+                        _selectedRegion.InactiveUmbral.GetValueOrDefault(),
+                        _selectedRegion.IsOnlyNumber.GetValueOrDefault());
             }
 
             lbResultOcr.Text = !string.IsNullOrEmpty(ocr.Text) ? ocr.Text : "Sin resultado";
@@ -549,7 +555,7 @@ public partial class FrmMain : Form
     {
         SKColor color = _colorDetectionService.GetPixelColor(pbImagenOcr.Image, _selectedRegion.PosX, _selectedRegion.PosY);
         pbColorDebug.BackColor = Color.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
-        lbHexadecimal.Text = $"#{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
+        lbHexadecimal.Text = $"#{color.Red:X2}{color.Green:X2}{color.Blue:X2} - R:{color.Red} G:{color.Green} B:{color.Blue}";
     }
 
     private async void btnCard_Click(object sender, EventArgs e)
@@ -558,23 +564,27 @@ public partial class FrmMain : Form
         {
             var imageToBase64 = _imageCropperService.CropImageToBase64(pbImagenOcr.Image, _selectedRegion.PosX, _selectedRegion.PosY, _selectedRegion.Width, _selectedRegion.Height);
 
-            //_imageCropperService.GuardarEnArchivo(tbCarta.Text, imageToBase64);
+            if (_cardsImages == null)
+                _cardsImages = await Task.Run(async () => await _cardUseCases.GetAllCards.ExecuteAsync());
 
-            var images = await Task.Run(async () => await _cardUseCases.GetAllCards.ExecuteAsync());
-
-            foreach (var item in images.Value)
+            if (_cardsImages?.Value != null)
             {
-                if (!string.IsNullOrEmpty(item.ImageBase64))
+                foreach (var item in _cardsImages.Value)
                 {
-                    if (_imageCropperService.CompareCardsBase64(item.ImageBase64, imageToBase64))
+                    var maxPorcentaje = 0.0;
+
+                    if (!string.IsNullOrEmpty(item.ImageBase64))
                     {
-                        pbCartas.Image = _imageCropperService.Base64ToImage(item.ImageBase64);
-                        break;
+                        var pocentaje = _imageCropperService.CompareCardsBase64(item.ImageBase64, imageToBase64);
+
+                        if (pocentaje > maxPorcentaje)
+                        {
+                            maxPorcentaje = pocentaje;
+                            pbCartas.Image = _imageCropperService.Base64ToImage(item.ImageBase64);
+                        }                                                
                     }
                 }
             }
-
-            tbCarta.Text = string.Empty;
         }
         else
         {
