@@ -12,7 +12,7 @@ namespace Dealytics.Features.InitialConfig.Action
             _fileDialogService = fileDialogService;
         }
 
-        public async Task<ActionDTO?>? ExecuteAsync()
+        public async Task<TableDTO?>? ExecuteAsync()
         {
             try
             {
@@ -32,12 +32,12 @@ namespace Dealytics.Features.InitialConfig.Action
                 using (var reader = new StreamReader(stream))
                 {
                     var jsonContent = await reader.ReadToEndAsync();
-                    var actions = JsonSerializer.Deserialize<ActionDTO>(jsonContent, new JsonSerializerOptions
+                    var actions = JsonSerializer.Deserialize<TableDTO>(jsonContent, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
 
-                    return actions ?? new ActionDTO { Name = string.Empty };
+                    return actions ?? new TableDTO { Name = string.Empty };
                 }
             }
             catch (Exception ex)

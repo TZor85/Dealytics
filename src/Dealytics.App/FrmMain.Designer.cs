@@ -35,7 +35,17 @@
             tpConfig = new TabPage();
             tcConfiguration = new TabControl();
             tbOcr = new TabPage();
-            btnUpdateRegion = new Button();
+            tbCarta = new TextBox();
+            pbCartas = new PictureBox();
+            btnCard = new Button();
+            lbHexadecimal = new Label();
+            pbColorDebug = new PictureBox();
+            btnColor = new Button();
+            btnNext = new Button();
+            btnPrevious = new Button();
+            pbImageDebug = new PictureBox();
+            lbResultOcr = new Label();
+            btnTextoOcr = new Button();
             label4 = new Label();
             label3 = new Label();
             label2 = new Label();
@@ -53,26 +63,25 @@
             dgvRegiones = new DataGridView();
             tbCards = new TabPage();
             lbMessageCards = new Label();
-            btnCards = new Button();
+            btnAddCards = new Button();
             dgvCartas = new DataGridView();
             tbTables = new TabPage();
+            lbMessageHands = new Label();
+            btnHands = new Button();
             panel1 = new Panel();
             tvTables = new TreeView();
             dgvHands = new DataGridView();
-            Name = new DataGridViewTextBoxColumn();
-            Suited = new DataGridViewCheckBoxColumn();
-            Action = new DataGridViewTextBoxColumn();
-            Percentage = new DataGridViewTextBoxColumn();
             tbInit = new TabPage();
             button3 = new Button();
             button2 = new Button();
-            lbMessageHands = new Label();
-            btnHands = new Button();
             tcMain.SuspendLayout();
             tpGame.SuspendLayout();
             tpConfig.SuspendLayout();
             tcConfiguration.SuspendLayout();
             tbOcr.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbCartas).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbColorDebug).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbImageDebug).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numHeight).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numWidth).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numPosY).BeginInit();
@@ -146,7 +155,17 @@
             // 
             // tbOcr
             // 
-            tbOcr.Controls.Add(btnUpdateRegion);
+            tbOcr.Controls.Add(tbCarta);
+            tbOcr.Controls.Add(pbCartas);
+            tbOcr.Controls.Add(btnCard);
+            tbOcr.Controls.Add(lbHexadecimal);
+            tbOcr.Controls.Add(pbColorDebug);
+            tbOcr.Controls.Add(btnColor);
+            tbOcr.Controls.Add(btnNext);
+            tbOcr.Controls.Add(btnPrevious);
+            tbOcr.Controls.Add(pbImageDebug);
+            tbOcr.Controls.Add(lbResultOcr);
+            tbOcr.Controls.Add(btnTextoOcr);
             tbOcr.Controls.Add(label4);
             tbOcr.Controls.Add(label3);
             tbOcr.Controls.Add(label2);
@@ -165,20 +184,124 @@
             tbOcr.Text = "OCR";
             tbOcr.UseVisualStyleBackColor = true;
             // 
-            // btnUpdateRegion
+            // tbCarta
             // 
-            btnUpdateRegion.Location = new Point(1069, 12);
-            btnUpdateRegion.Name = "btnUpdateRegion";
-            btnUpdateRegion.Size = new Size(75, 23);
-            btnUpdateRegion.TabIndex = 12;
-            btnUpdateRegion.Text = "Actualizar";
-            btnUpdateRegion.UseVisualStyleBackColor = true;
-            btnUpdateRegion.Click += btnUpdateRegion_Click;
+            tbCarta.Location = new Point(609, 53);
+            tbCarta.Name = "tbCarta";
+            tbCarta.Size = new Size(100, 23);
+            tbCarta.TabIndex = 21;
+            // 
+            // pbCartas
+            // 
+            pbCartas.Location = new Point(720, 8);
+            pbCartas.Name = "pbCartas";
+            pbCartas.Size = new Size(20, 35);
+            pbCartas.TabIndex = 20;
+            pbCartas.TabStop = false;
+            // 
+            // btnCard
+            // 
+            btnCard.Location = new Point(634, 14);
+            btnCard.Name = "btnCard";
+            btnCard.Size = new Size(75, 23);
+            btnCard.TabIndex = 19;
+            btnCard.Text = "Carta";
+            btnCard.UseVisualStyleBackColor = true;
+            btnCard.Click += btnCard_Click;
+            // 
+            // lbHexadecimal
+            // 
+            lbHexadecimal.AutoSize = true;
+            lbHexadecimal.Location = new Point(645, 18);
+            lbHexadecimal.Name = "lbHexadecimal";
+            lbHexadecimal.Size = new Size(0, 15);
+            lbHexadecimal.TabIndex = 18;
+            // 
+            // pbColorDebug
+            // 
+            pbColorDebug.Location = new Point(595, 15);
+            pbColorDebug.Name = "pbColorDebug";
+            pbColorDebug.Size = new Size(20, 20);
+            pbColorDebug.TabIndex = 17;
+            pbColorDebug.TabStop = false;
+            // 
+            // btnColor
+            // 
+            btnColor.Location = new Point(515, 14);
+            btnColor.Name = "btnColor";
+            btnColor.Size = new Size(75, 23);
+            btnColor.TabIndex = 16;
+            btnColor.Text = "Color";
+            btnColor.UseVisualStyleBackColor = true;
+            btnColor.Click += btnColor_Click;
+            // 
+            // btnNext
+            // 
+            btnNext.BackColor = Color.Transparent;
+            btnNext.Cursor = Cursors.Hand;
+            btnNext.FlatAppearance.BorderSize = 0;
+            btnNext.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            btnNext.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            btnNext.FlatStyle = FlatStyle.Flat;
+            btnNext.Font = new Font("Segoe UI", 20F);
+            btnNext.ForeColor = Color.Black;
+            btnNext.Location = new Point(1179, 242);
+            btnNext.Name = "btnNext";
+            btnNext.Size = new Size(25, 300);
+            btnNext.TabIndex = 15;
+            btnNext.Text = "→";
+            btnNext.UseVisualStyleBackColor = true;
+            btnNext.Click += btnNext_Click;
+            // 
+            // btnPrevious
+            // 
+            btnPrevious.BackColor = Color.Transparent;
+            btnPrevious.Cursor = Cursors.Hand;
+            btnPrevious.FlatAppearance.BorderSize = 0;
+            btnPrevious.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            btnPrevious.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            btnPrevious.FlatStyle = FlatStyle.Flat;
+            btnPrevious.Font = new Font("Segoe UI", 20F);
+            btnPrevious.ForeColor = Color.Black;
+            btnPrevious.Location = new Point(182, 242);
+            btnPrevious.Name = "btnPrevious";
+            btnPrevious.Size = new Size(25, 300);
+            btnPrevious.TabIndex = 14;
+            btnPrevious.Text = "←";
+            btnPrevious.UseVisualStyleBackColor = true;
+            btnPrevious.Click += btnPrevious_Click;
+            // 
+            // pbImageDebug
+            // 
+            pbImageDebug.Location = new Point(357, 14);
+            pbImageDebug.Name = "pbImageDebug";
+            pbImageDebug.Size = new Size(150, 25);
+            pbImageDebug.SizeMode = PictureBoxSizeMode.AutoSize;
+            pbImageDebug.TabIndex = 13;
+            pbImageDebug.TabStop = false;
+            // 
+            // lbResultOcr
+            // 
+            lbResultOcr.AutoSize = true;
+            lbResultOcr.Location = new Point(261, 18);
+            lbResultOcr.Name = "lbResultOcr";
+            lbResultOcr.Size = new Size(0, 15);
+            lbResultOcr.TabIndex = 12;
+            // 
+            // btnTextoOcr
+            // 
+            btnTextoOcr.Location = new Point(184, 14);
+            btnTextoOcr.Name = "btnTextoOcr";
+            btnTextoOcr.Size = new Size(75, 23);
+            btnTextoOcr.TabIndex = 2;
+            btnTextoOcr.Text = "Texto";
+            btnTextoOcr.UseVisualStyleBackColor = true;
+            btnTextoOcr.Click += btnTextoOcr_Click;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(815, 18);
+            label4.Location = new Point(1092, 18);
             label4.Name = "label4";
             label4.Size = new Size(46, 15);
             label4.TabIndex = 11;
@@ -187,7 +310,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(604, 18);
+            label3.Location = new Point(981, 18);
             label3.Name = "label3";
             label3.Size = new Size(42, 15);
             label3.TabIndex = 10;
@@ -196,7 +319,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(365, 18);
+            label2.Location = new Point(893, 18);
             label2.Name = "label2";
             label2.Size = new Size(17, 15);
             label2.TabIndex = 9;
@@ -205,7 +328,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(181, 16);
+            label1.Location = new Point(805, 18);
             label1.Name = "label1";
             label1.Size = new Size(17, 15);
             label1.TabIndex = 8;
@@ -213,38 +336,38 @@
             // 
             // numHeight
             // 
-            numHeight.Location = new Point(867, 14);
+            numHeight.Location = new Point(1142, 14);
             numHeight.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             numHeight.Name = "numHeight";
-            numHeight.Size = new Size(120, 23);
-            numHeight.TabIndex = 7;
+            numHeight.Size = new Size(60, 23);
+            numHeight.TabIndex = 6;
             numHeight.ValueChanged += NumericUpDown_ValueChanged;
             // 
             // numWidth
             // 
-            numWidth.Location = new Point(652, 14);
+            numWidth.Location = new Point(1026, 14);
             numWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             numWidth.Name = "numWidth";
-            numWidth.Size = new Size(120, 23);
-            numWidth.TabIndex = 6;
+            numWidth.Size = new Size(60, 23);
+            numWidth.TabIndex = 5;
             numWidth.ValueChanged += NumericUpDown_ValueChanged;
             // 
             // numPosY
             // 
-            numPosY.Location = new Point(388, 14);
+            numPosY.Location = new Point(913, 14);
             numPosY.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             numPosY.Name = "numPosY";
-            numPosY.Size = new Size(120, 23);
-            numPosY.TabIndex = 5;
+            numPosY.Size = new Size(60, 23);
+            numPosY.TabIndex = 4;
             numPosY.ValueChanged += NumericUpDown_ValueChanged;
             // 
             // numPosX
             // 
-            numPosX.Location = new Point(204, 14);
+            numPosX.Location = new Point(825, 14);
             numPosX.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             numPosX.Name = "numPosX";
-            numPosX.Size = new Size(120, 23);
-            numPosX.TabIndex = 4;
+            numPosX.Size = new Size(60, 23);
+            numPosX.TabIndex = 3;
             numPosX.ValueChanged += NumericUpDown_ValueChanged;
             // 
             // pbImagenOcr
@@ -318,7 +441,7 @@
             // tbCards
             // 
             tbCards.Controls.Add(lbMessageCards);
-            tbCards.Controls.Add(btnCards);
+            tbCards.Controls.Add(btnAddCards);
             tbCards.Controls.Add(dgvCartas);
             tbCards.Location = new Point(4, 24);
             tbCards.Name = "tbCards";
@@ -336,15 +459,15 @@
             lbMessageCards.Size = new Size(0, 15);
             lbMessageCards.TabIndex = 7;
             // 
-            // btnCards
+            // btnAddCards
             // 
-            btnCards.Location = new Point(6, 8);
-            btnCards.Name = "btnCards";
-            btnCards.Size = new Size(75, 23);
-            btnCards.TabIndex = 6;
-            btnCards.Text = "Cartas";
-            btnCards.UseVisualStyleBackColor = true;
-            btnCards.Click += btnCards_Click;
+            btnAddCards.Location = new Point(6, 8);
+            btnAddCards.Name = "btnAddCards";
+            btnAddCards.Size = new Size(75, 23);
+            btnAddCards.TabIndex = 6;
+            btnAddCards.Text = "Cartas";
+            btnAddCards.UseVisualStyleBackColor = true;
+            btnAddCards.Click += btnAddCards_Click;
             // 
             // dgvCartas
             // 
@@ -367,6 +490,24 @@
             tbTables.Text = "Manos";
             tbTables.UseVisualStyleBackColor = true;
             // 
+            // lbMessageHands
+            // 
+            lbMessageHands.AutoSize = true;
+            lbMessageHands.Location = new Point(84, 15);
+            lbMessageHands.Name = "lbMessageHands";
+            lbMessageHands.Size = new Size(0, 15);
+            lbMessageHands.TabIndex = 9;
+            // 
+            // btnHands
+            // 
+            btnHands.Location = new Point(3, 11);
+            btnHands.Name = "btnHands";
+            btnHands.Size = new Size(75, 23);
+            btnHands.TabIndex = 8;
+            btnHands.Text = "Manos";
+            btnHands.UseVisualStyleBackColor = true;
+            btnHands.Click += btnHands_Click;
+            // 
             // panel1
             // 
             panel1.Controls.Add(tvTables);
@@ -381,8 +522,9 @@
             tvTables.Dock = DockStyle.Left;
             tvTables.Location = new Point(0, 0);
             tvTables.Name = "tvTables";
-            tvTables.Size = new Size(175, 738);
+            tvTables.Size = new Size(262, 738);
             tvTables.TabIndex = 4;
+            tvTables.DoubleClick += tvTables_DoubleClick;
             // 
             // dgvHands
             // 
@@ -390,41 +532,16 @@
             dgvHands.AllowUserToDeleteRows = false;
             dgvHands.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvHands.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvHands.Columns.AddRange(new DataGridViewColumn[] { Name, Suited, Action, Percentage });
             dgvHands.Dock = DockStyle.Right;
             dgvHands.EnableHeadersVisualStyles = false;
-            dgvHands.Location = new Point(174, 0);
+            dgvHands.Location = new Point(260, 0);
             dgvHands.MultiSelect = false;
             dgvHands.Name = "dgvHands";
             dgvHands.ReadOnly = true;
             dgvHands.RowHeadersVisible = false;
             dgvHands.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvHands.Size = new Size(1036, 738);
+            dgvHands.Size = new Size(950, 738);
             dgvHands.TabIndex = 3;
-            // 
-            // Name
-            // 
-            Name.HeaderText = "Mano";
-            Name.Name = "Name";
-            Name.ReadOnly = true;
-            // 
-            // Suited
-            // 
-            Suited.HeaderText = "Suited";
-            Suited.Name = "Suited";
-            Suited.ReadOnly = true;
-            // 
-            // Action
-            // 
-            Action.HeaderText = "Acción";
-            Action.Name = "Action";
-            Action.ReadOnly = true;
-            // 
-            // Percentage
-            // 
-            Percentage.HeaderText = "Porcentaje";
-            Percentage.Name = "Percentage";
-            Percentage.ReadOnly = true;
             // 
             // tbInit
             // 
@@ -455,24 +572,6 @@
             button2.Text = "button2";
             button2.UseVisualStyleBackColor = true;
             // 
-            // lbMessageHands
-            // 
-            lbMessageHands.AutoSize = true;
-            lbMessageHands.Location = new Point(84, 15);
-            lbMessageHands.Name = "lbMessageHands";
-            lbMessageHands.Size = new Size(0, 15);
-            lbMessageHands.TabIndex = 9;
-            // 
-            // btnHands
-            // 
-            btnHands.Location = new Point(3, 11);
-            btnHands.Name = "btnHands";
-            btnHands.Size = new Size(75, 23);
-            btnHands.TabIndex = 8;
-            btnHands.Text = "Manos";
-            btnHands.UseVisualStyleBackColor = true;
-            btnHands.Click += btnHands_Click;
-            // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -480,7 +579,7 @@
             ClientSize = new Size(1233, 841);
             Controls.Add(tcMain);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            //Name = "FrmMain";
+            Name = "FrmMain";
             Text = "DEALYTICS";
             tcMain.ResumeLayout(false);
             tpGame.ResumeLayout(false);
@@ -488,6 +587,9 @@
             tcConfiguration.ResumeLayout(false);
             tbOcr.ResumeLayout(false);
             tbOcr.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pbCartas).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbColorDebug).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbImageDebug).EndInit();
             ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();
             ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
             ((System.ComponentModel.ISupportInitialize)numPosY).EndInit();
@@ -525,7 +627,7 @@
         private Button btnRegiones;
         private Label lbMessageRegions;
         private Label lbMessageCards;
-        private Button btnCards;
+        private Button btnAddCards;
         private TreeView tvRegions;
         private Button btnCargarImagen;
         private PictureBox pbImagenOcr;
@@ -537,16 +639,22 @@
         private Label label3;
         private Label label2;
         private Label label1;
-        private Button btnUpdateRegion;
         private TabPage tbTables;
         private Panel panel1;
         private TreeView tvTables;
         private DataGridView dgvHands;
-        private DataGridViewTextBoxColumn Name;
-        private DataGridViewCheckBoxColumn Suited;
-        private DataGridViewTextBoxColumn Action;
-        private DataGridViewTextBoxColumn Percentage;
         private Label lbMessageHands;
         private Button btnHands;
+        private Button btnTextoOcr;
+        private Label lbResultOcr;
+        private PictureBox pbImageDebug;
+        private Button btnPrevious;
+        private Button btnNext;
+        private Button btnColor;
+        private PictureBox pbColorDebug;
+        private Label lbHexadecimal;
+        private Button btnCard;
+        private PictureBox pbCartas;
+        private TextBox tbCarta;
     }
 }

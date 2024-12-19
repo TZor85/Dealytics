@@ -11,7 +11,6 @@ public static class CardDTOMapper
             Name = card.Id,
             BinaryValue = card.BinaryValue,
             ImageBase64 = card.ImageBase64,
-            ImageEncrypted = card.ImageEncrypted,
             Hall = card.Hall,
             Force = card.Force,
             Suit = card.Suit
@@ -25,7 +24,6 @@ public static class CardDTOMapper
             Id = card.Name,
             BinaryValue = card.BinaryValue,
             ImageBase64 = card.ImageBase64,
-            ImageEncrypted = card.ImageEncrypted,
             Hall = card.Hall,
             Force = card.Force,
             Suit = card.Suit

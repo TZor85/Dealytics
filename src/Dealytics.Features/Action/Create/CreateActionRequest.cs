@@ -1,4 +1,4 @@
 ﻿namespace Dealytics.Features.Action.Create;
 
-public record CreateActionRequest(Domain.Entities.Action Action);
+public record CreateActionRequest(Domain.Entities.Table Action);
 

@@ -27,6 +27,8 @@ namespace Dealytics.App
                     services.AddUseCases();
                     services.AddScoped<IFileDialogService, WindowsFileDialogService>();
 
+                    services.AddScoped<OcrService>();
+
                     // Registrar tu formulario principal
                     services.AddTransient<FrmMain>();
                 });

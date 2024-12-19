@@ -3,6 +3,8 @@ using Dealytics.Features.Action.Create;
 using Dealytics.Features.Action.CreateAll;
 using Dealytics.Features.Card;
 using Dealytics.Features.Card.CreateAll;
+using Dealytics.Features.Card.Get;
+using Dealytics.Features.Card.GetAll;
 using Dealytics.Features.InitialConfig.Action;
 using Dealytics.Features.InitialConfig.Card;
 using Dealytics.Features.InitialConfig.Region;
@@ -23,6 +25,8 @@ namespace Dealytics.Features
             .AddScoped<RegionUseCases>()
 
             .AddScoped<CreateAllCards>()
+            .AddScoped<GetCard>()
+            .AddScoped<GetAllCards>()
             .AddScoped<CardUseCases>()
 
             .AddScoped<CreateAction>()
@@ -30,7 +34,7 @@ namespace Dealytics.Features
             .AddScoped<ActionUseCases>()
 
             .AddScoped<GetAllRegions>()
-            .AddScoped<GetAllCards>()
+            .AddScoped<LoadAllCards>()
             .AddScoped<GetAllTableMaps>()
             .AddScoped<GetAllActions>();
     }
