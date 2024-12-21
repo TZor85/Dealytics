@@ -569,10 +569,11 @@ public partial class FrmMain : Form
 
             if (_cardsImages?.Value != null)
             {
+                var maxPorcentaje = 0.0;
+                
                 foreach (var item in _cardsImages.Value)
                 {
-                    var maxPorcentaje = 0.0;
-
+                
                     if (!string.IsNullOrEmpty(item.ImageBase64))
                     {
                         var pocentaje = _imageCropperService.CompareCardsBase64(item.ImageBase64, imageToBase64);

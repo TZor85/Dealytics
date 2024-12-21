@@ -1,0 +1,9 @@
+Revision:
+
+- Playing: OK
+- SitOut: OK
+- Table: IsFlop
+- User: uAction
+- Empty: OK
+- Bets: OK
+- Dealer: OK
