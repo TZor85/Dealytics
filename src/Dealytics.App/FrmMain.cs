@@ -11,14 +11,11 @@ using Dealytics.Features.Card;
 using Dealytics.Features.Card.CreateAll;
 using Dealytics.Features.Regions;
 using Dealytics.Features.Regions.CreateAll;
-using Dealytics.Features.Regions.Update;
 using Marten;
-using NetTopologySuite.Geometries;
 using PokerVisionAI.App.Services;
 using SkiaSharp;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
 
 namespace Dealytics.App;
 
@@ -34,12 +31,18 @@ public partial class FrmMain : Form
     private ActionUseCases _actionUseCases;
     #endregion
 
-    private List<RegionCategory> _regionCateory;
+    
     private IReadOnlyList<Table> _tables;
     private List<Table> _dataTables;
     private Rectangle currentRectangle;
     private bool shouldDrawRectangle = false;
     private Domain.ValueObjects.Region? _selectedRegion;
+
+    #region DataToLoad
+    private List<RegionCategory> _regionsCategories;
+    private Result<List<Domain.Dtos.CardDTO>?> _cardsImages;
+
+    #endregion
 
     #region Services
     private WindowCaptureService _windowCaptureService;
@@ -55,7 +58,7 @@ public partial class FrmMain : Form
     private string currentDirectory;
     #endregion
 
-    private Result<List<Domain.Dtos.CardDTO>?> _cardsImages;
+    
 
     private Dictionary<nint, FrmExternalWindowOverlay> activeOverlays = new Dictionary<nint, FrmExternalWindowOverlay>();
 
@@ -96,6 +99,7 @@ public partial class FrmMain : Form
         {
             using (var session = _store.LightweightSession())
             {
+                _cardsImages = await _cardUseCases.GetAllCards.ExecuteAsync();
                 var regions = new List<Domain.ValueObjects.Region>();
 
                 var dataRegions = await session.Query<RegionCategory>().ToListAsync();
@@ -109,11 +113,12 @@ public partial class FrmMain : Form
                     }
                 }
 
+                //_cardsImages.Value
                 var dataCards = await session.Query<Card>().ToListAsync();
 
                 dgvCartas.DataSource = dataCards;
                 dgvRegiones.DataSource = regions;
-                _regionCateory = dataRegions.ToList();
+                _regionsCategories = dataRegions.ToList();
                 LoadTreeView(dataRegions.ToList());
 
                 _tables = await session.Query<Table>().ToListAsync();
@@ -134,7 +139,7 @@ public partial class FrmMain : Form
     {
         // Este método se ejecutará cada vez que cambie la ventana activa
         // que contenga la palabra clave
-        btnAddOverlay.Text = ($"Handle: {e.Handle}");
+        var handle = ($"Handle: {e.Handle}");
 
         var overlay = new FrmExternalWindowOverlay(e.Title ?? string.Empty);
 
@@ -153,10 +158,35 @@ public partial class FrmMain : Form
         }
 
         // Se agrega la imagen de la ventana activa
-        var image = _windowCaptureService.CaptureWindow(e.Handle);
-        pbImagenOcr.Image = image;
+        var image = _windowCaptureService.CaptureWindow(e.Handle);       
+        SaveImage(image);
+        //pbImagenOcr.Image = image;
 
         // Aquí puedes agregar cualquier lógica adicional que necesites
+    }
+
+    private void SaveImage(Image image)
+    {
+        try
+        {
+            string rutaGuardado = @"C:\RutaDeseada\"; // Modifica esta ruta según tus necesidades
+            string nombreArchivo = $"Captura_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+            string rutaCompleta = Path.Combine(rutaGuardado, nombreArchivo);
+
+            // Asegurarse de que el directorio existe
+            Directory.CreateDirectory(rutaGuardado);
+
+            // Guardar la imagen
+            if (image != null)
+            {
+                image.Save(rutaCompleta, System.Drawing.Imaging.ImageFormat.Png);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Manejo de errores
+            MessageBox.Show($"Error al guardar la imagen: {ex.Message}");
+        }
     }
 
     private async void btnRegiones_Click(object sender, EventArgs e)
@@ -310,8 +340,8 @@ public partial class FrmMain : Form
 
     private void LoadImagesFromDirectory(string filePath)
     {
-        currentDirectory = Path.GetDirectoryName(filePath);
-        imageFiles = Directory.GetFiles(currentDirectory, "*.png")  // Añade más extensiones si es necesario
+        currentDirectory = Path.GetDirectoryName(filePath) ?? string.Empty;
+        imageFiles = Directory.GetFiles(currentDirectory, "*.png")
                              .Union(Directory.GetFiles(currentDirectory, "*.jpg"))
                              .Union(Directory.GetFiles(currentDirectory, "*.jpeg"))
                              .ToArray();
@@ -471,7 +501,7 @@ public partial class FrmMain : Form
     private Domain.ValueObjects.Region? ObtenerRegionDelNodo(TreeNode node)
     {
         // Implementa la lógica para obtener la región basada en el nodo
-        return _regionCateory.SelectMany(c => c.Regions ?? new List<Domain.ValueObjects.Region>())
+        return _regionsCategories.SelectMany(c => c.Regions ?? new List<Domain.ValueObjects.Region>())
                     .FirstOrDefault(r => r.Name == node.Text);
     }
 
@@ -500,24 +530,6 @@ public partial class FrmMain : Form
             pbImagenOcr.Invalidate();
         }
     }
-
-    //private async void btnUpdateRegion_Click(object sender, EventArgs e)
-    //{
-    //    if (tvRegions.SelectedNode?.Parent != null)
-    //    {
-    //        await Task.Run(async () => await _regionUseCases.UpdateRegion.ExecuteAsync(new UpdateRegionRequest(
-    //            tvRegions.SelectedNode.Parent.Text,
-    //            tvRegions.SelectedNode.Text,
-    //            (int)numPosX.Value,
-    //            (int)numPosY.Value,
-    //            (int)numWidth.Value,
-    //            (int)numHeight.Value)));
-    //    }
-    //    else
-    //    {
-    //        lbMessageRegions.Text = "Seleccione una región válida para actualizar.";
-    //    }
-    //}
 
     private void btnTextoOcr_Click(object sender, EventArgs e)
     {
@@ -570,10 +582,10 @@ public partial class FrmMain : Form
             if (_cardsImages?.Value != null)
             {
                 var maxPorcentaje = 0.0;
-                
+
                 foreach (var item in _cardsImages.Value)
                 {
-                
+
                     if (!string.IsNullOrEmpty(item.ImageBase64))
                     {
                         var pocentaje = _imageCropperService.CompareCardsBase64(item.ImageBase64, imageToBase64);
@@ -582,7 +594,7 @@ public partial class FrmMain : Form
                         {
                             maxPorcentaje = pocentaje;
                             pbCartas.Image = _imageCropperService.Base64ToImage(item.ImageBase64);
-                        }                                                
+                        }
                     }
                 }
             }

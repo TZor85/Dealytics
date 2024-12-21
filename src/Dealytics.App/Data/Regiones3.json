@@ -595,10 +595,10 @@
 			{
 				"Category": "Table",
 				"Name": "tablehand",
-				"PosX": 137,
+				"PosX": 117,
 				"PosY": 45,
 				"Color": null,
-				"Width": 97,
+				"Width": 138,
 				"Height": 19,
 				"IsHash": false,
 				"IsBoard": false,

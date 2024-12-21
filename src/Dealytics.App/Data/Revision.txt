@@ -2,8 +2,9 @@ Revision:
 
 - Playing: OK
 - SitOut: OK
-- Table: IsFlop
+- Table: OK
 - User: uAction
 - Empty: OK
 - Bets: OK
 - Dealer: OK
+- Board: OK

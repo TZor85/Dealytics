@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             tcMain = new TabControl();
             tpGame = new TabPage();
-            btnAddOverlay = new Button();
+            pbImageGame = new PictureBox();
             tpConfig = new TabPage();
             tcConfiguration = new TabControl();
             tbOcr = new TabPage();
@@ -75,6 +75,7 @@
             button2 = new Button();
             tcMain.SuspendLayout();
             tpGame.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbImageGame).BeginInit();
             tpConfig.SuspendLayout();
             tcConfiguration.SuspendLayout();
             tbOcr.SuspendLayout();
@@ -109,7 +110,7 @@
             // 
             // tpGame
             // 
-            tpGame.Controls.Add(btnAddOverlay);
+            tpGame.Controls.Add(pbImageGame);
             tpGame.Location = new Point(4, 24);
             tpGame.Name = "tpGame";
             tpGame.Padding = new Padding(3);
@@ -118,14 +119,13 @@
             tpGame.Text = "Juego";
             tpGame.UseVisualStyleBackColor = true;
             // 
-            // btnAddOverlay
+            // pbImageGame
             // 
-            btnAddOverlay.Location = new Point(8, 94);
-            btnAddOverlay.Name = "btnAddOverlay";
-            btnAddOverlay.Size = new Size(165, 23);
-            btnAddOverlay.TabIndex = 0;
-            btnAddOverlay.Text = "button4";
-            btnAddOverlay.UseVisualStyleBackColor = true;
+            pbImageGame.Location = new Point(199, 2);
+            pbImageGame.Name = "pbImageGame";
+            pbImageGame.Size = new Size(1025, 727);
+            pbImageGame.TabIndex = 1;
+            pbImageGame.TabStop = false;
             // 
             // tpConfig
             // 
@@ -574,6 +574,7 @@
             Text = "DEALYTICS";
             tcMain.ResumeLayout(false);
             tpGame.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pbImageGame).EndInit();
             tpConfig.ResumeLayout(false);
             tcConfiguration.ResumeLayout(false);
             tbOcr.ResumeLayout(false);
@@ -614,7 +615,6 @@
         private Button button2;
         private DataGridView dgvRegiones;
         private DataGridView dgvCartas;
-        private Button btnAddOverlay;
         private Button btnRegiones;
         private Label lbMessageRegions;
         private Label lbMessageCards;
@@ -646,5 +646,6 @@
         private Label lbHexadecimal;
         private Button btnCard;
         private PictureBox pbCartas;
+        private PictureBox pbImageGame;
     }
 }
