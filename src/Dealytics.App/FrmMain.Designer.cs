@@ -36,6 +36,21 @@
             tpConfig = new TabPage();
             tcConfiguration = new TabControl();
             tbOcr = new TabPage();
+            groupBox3 = new GroupBox();
+            numericUpDown1 = new NumericUpDown();
+            label7 = new Label();
+            numUmbralActive = new NumericUpDown();
+            label6 = new Label();
+            groupBox1 = new GroupBox();
+            groupBox2 = new GroupBox();
+            label2 = new Label();
+            label1 = new Label();
+            numPosY = new NumericUpDown();
+            numPosX = new NumericUpDown();
+            label4 = new Label();
+            label3 = new Label();
+            numHeight = new NumericUpDown();
+            numWidth = new NumericUpDown();
             txtColorConfig = new TextBox();
             pbColorRegionConfig = new PictureBox();
             label5 = new Label();
@@ -121,27 +136,20 @@
             btnDebugManual = new Button();
             btnLoadImageDebug = new Button();
             pbImageDebug = new PictureBox();
-            groupBox1 = new GroupBox();
-            label2 = new Label();
-            label1 = new Label();
-            numPosY = new NumericUpDown();
-            numPosX = new NumericUpDown();
-            label4 = new Label();
-            label3 = new Label();
-            numHeight = new NumericUpDown();
-            numWidth = new NumericUpDown();
-            groupBox2 = new GroupBox();
-            groupBox3 = new GroupBox();
-            numUmbralActive = new NumericUpDown();
-            label6 = new Label();
-            numericUpDown1 = new NumericUpDown();
-            label7 = new Label();
             tcMain.SuspendLayout();
             tpGame.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pbImageGame).BeginInit();
             tpConfig.SuspendLayout();
             tcConfiguration.SuspendLayout();
             tbOcr.SuspendLayout();
+            groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numUmbralActive).BeginInit();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numPosY).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numPosX).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numHeight).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numWidth).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbColorRegionConfig).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbCartas).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbColorDebug).BeginInit();
@@ -163,14 +171,6 @@
             ((System.ComponentModel.ISupportInitialize)pbCard2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbCard1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbImageDebug).BeginInit();
-            groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numPosY).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numPosX).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numHeight).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numWidth).BeginInit();
-            groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numUmbralActive).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
             SuspendLayout();
             // 
             // tcMain
@@ -264,6 +264,149 @@
             tbOcr.TabIndex = 2;
             tbOcr.Text = "OCR";
             tbOcr.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(numericUpDown1);
+            groupBox3.Controls.Add(label7);
+            groupBox3.Controls.Add(numUmbralActive);
+            groupBox3.Controls.Add(label6);
+            groupBox3.Location = new Point(3, 457);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(173, 85);
+            groupBox3.TabIndex = 31;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Umbral";
+            // 
+            // numericUpDown1
+            // 
+            numericUpDown1.Location = new Point(68, 51);
+            numericUpDown1.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numericUpDown1.Name = "numericUpDown1";
+            numericUpDown1.Size = new Size(60, 23);
+            numericUpDown1.TabIndex = 33;
+            numericUpDown1.ValueChanged += numericUpDown1_ValueChanged;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(4, 53);
+            label7.Name = "label7";
+            label7.Size = new Size(52, 15);
+            label7.TabIndex = 32;
+            label7.Text = "Inactivo:";
+            // 
+            // numUmbralActive
+            // 
+            numUmbralActive.Location = new Point(68, 22);
+            numUmbralActive.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numUmbralActive.Name = "numUmbralActive";
+            numUmbralActive.Size = new Size(60, 23);
+            numUmbralActive.TabIndex = 31;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(4, 24);
+            label6.Name = "label6";
+            label6.Size = new Size(44, 15);
+            label6.TabIndex = 30;
+            label6.Text = "Activo:";
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(groupBox2);
+            groupBox1.Controls.Add(label2);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(numPosY);
+            groupBox1.Controls.Add(numPosX);
+            groupBox1.Controls.Add(label4);
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(numHeight);
+            groupBox1.Controls.Add(numWidth);
+            groupBox1.Location = new Point(3, 370);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(173, 87);
+            groupBox1.TabIndex = 30;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Posición";
+            // 
+            // groupBox2
+            // 
+            groupBox2.Location = new Point(4, 97);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(168, 100);
+            groupBox2.TabIndex = 31;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "groupBox2";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(92, 28);
+            label2.Name = "label2";
+            label2.Size = new Size(17, 15);
+            label2.TabIndex = 32;
+            label2.Text = "Y:";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(4, 28);
+            label1.Name = "label1";
+            label1.Size = new Size(17, 15);
+            label1.TabIndex = 31;
+            label1.Text = "X:";
+            // 
+            // numPosY
+            // 
+            numPosY.Location = new Point(112, 24);
+            numPosY.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numPosY.Name = "numPosY";
+            numPosY.Size = new Size(60, 23);
+            numPosY.TabIndex = 30;
+            // 
+            // numPosX
+            // 
+            numPosX.Location = new Point(24, 24);
+            numPosX.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numPosX.Name = "numPosX";
+            numPosX.Size = new Size(60, 23);
+            numPosX.TabIndex = 29;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(90, 57);
+            label4.Name = "label4";
+            label4.Size = new Size(19, 15);
+            label4.TabIndex = 28;
+            label4.Text = "H:";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(-1, 57);
+            label3.Name = "label3";
+            label3.Size = new Size(21, 15);
+            label3.TabIndex = 27;
+            label3.Text = "W:";
+            // 
+            // numHeight
+            // 
+            numHeight.Location = new Point(113, 53);
+            numHeight.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numHeight.Name = "numHeight";
+            numHeight.Size = new Size(60, 23);
+            numHeight.TabIndex = 26;
+            // 
+            // numWidth
+            // 
+            numWidth.Location = new Point(24, 53);
+            numWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numWidth.Name = "numWidth";
+            numWidth.Size = new Size(60, 23);
+            numWidth.TabIndex = 25;
             // 
             // txtColorConfig
             // 
@@ -1140,149 +1283,6 @@
             pbImageDebug.TabIndex = 4;
             pbImageDebug.TabStop = false;
             // 
-            // groupBox1
-            // 
-            groupBox1.Controls.Add(groupBox2);
-            groupBox1.Controls.Add(label2);
-            groupBox1.Controls.Add(label1);
-            groupBox1.Controls.Add(numPosY);
-            groupBox1.Controls.Add(numPosX);
-            groupBox1.Controls.Add(label4);
-            groupBox1.Controls.Add(label3);
-            groupBox1.Controls.Add(numHeight);
-            groupBox1.Controls.Add(numWidth);
-            groupBox1.Location = new Point(3, 370);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(173, 87);
-            groupBox1.TabIndex = 30;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Position";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(92, 28);
-            label2.Name = "label2";
-            label2.Size = new Size(17, 15);
-            label2.TabIndex = 32;
-            label2.Text = "Y:";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(4, 28);
-            label1.Name = "label1";
-            label1.Size = new Size(17, 15);
-            label1.TabIndex = 31;
-            label1.Text = "X:";
-            // 
-            // numPosY
-            // 
-            numPosY.Location = new Point(112, 24);
-            numPosY.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            numPosY.Name = "numPosY";
-            numPosY.Size = new Size(60, 23);
-            numPosY.TabIndex = 30;
-            // 
-            // numPosX
-            // 
-            numPosX.Location = new Point(24, 24);
-            numPosX.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            numPosX.Name = "numPosX";
-            numPosX.Size = new Size(60, 23);
-            numPosX.TabIndex = 29;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(90, 57);
-            label4.Name = "label4";
-            label4.Size = new Size(19, 15);
-            label4.TabIndex = 28;
-            label4.Text = "H:";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(-1, 57);
-            label3.Name = "label3";
-            label3.Size = new Size(21, 15);
-            label3.TabIndex = 27;
-            label3.Text = "W:";
-            // 
-            // numHeight
-            // 
-            numHeight.Location = new Point(113, 53);
-            numHeight.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            numHeight.Name = "numHeight";
-            numHeight.Size = new Size(60, 23);
-            numHeight.TabIndex = 26;
-            // 
-            // numWidth
-            // 
-            numWidth.Location = new Point(24, 53);
-            numWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            numWidth.Name = "numWidth";
-            numWidth.Size = new Size(60, 23);
-            numWidth.TabIndex = 25;
-            // 
-            // groupBox2
-            // 
-            groupBox2.Location = new Point(4, 97);
-            groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(168, 100);
-            groupBox2.TabIndex = 31;
-            groupBox2.TabStop = false;
-            groupBox2.Text = "groupBox2";
-            // 
-            // groupBox3
-            // 
-            groupBox3.Controls.Add(numericUpDown1);
-            groupBox3.Controls.Add(label7);
-            groupBox3.Controls.Add(numUmbralActive);
-            groupBox3.Controls.Add(label6);
-            groupBox3.Location = new Point(3, 457);
-            groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(173, 85);
-            groupBox3.TabIndex = 31;
-            groupBox3.TabStop = false;
-            groupBox3.Text = "Umbral";
-            // 
-            // numUmbralActive
-            // 
-            numUmbralActive.Location = new Point(68, 22);
-            numUmbralActive.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            numUmbralActive.Name = "numUmbralActive";
-            numUmbralActive.Size = new Size(60, 23);
-            numUmbralActive.TabIndex = 31;
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(4, 24);
-            label6.Name = "label6";
-            label6.Size = new Size(44, 15);
-            label6.TabIndex = 30;
-            label6.Text = "Activo:";
-            // 
-            // numericUpDown1
-            // 
-            numericUpDown1.Location = new Point(68, 51);
-            numericUpDown1.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(60, 23);
-            numericUpDown1.TabIndex = 33;
-            numericUpDown1.ValueChanged += numericUpDown1_ValueChanged;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(4, 53);
-            label7.Name = "label7";
-            label7.Size = new Size(52, 15);
-            label7.TabIndex = 32;
-            label7.Text = "Inactivo:";
-            // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1300,6 +1300,16 @@
             tcConfiguration.ResumeLayout(false);
             tbOcr.ResumeLayout(false);
             tbOcr.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numUmbralActive).EndInit();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numPosY).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numPosX).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbColorRegionConfig).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbCartas).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbColorDebug).EndInit();
@@ -1325,16 +1335,6 @@
             ((System.ComponentModel.ISupportInitialize)pbCard2).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbCard1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbImageDebug).EndInit();
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numPosY).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numPosX).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
-            groupBox3.ResumeLayout(false);
-            groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numUmbralActive).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
             ResumeLayout(false);
         }
 
