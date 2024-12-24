@@ -422,7 +422,7 @@
 				"Name": "p1empty",
 				"PosX": 213,
 				"PosY": 434,
-				"Color": "#1B2814",
+				"Color": "#466930",
 				"Width": 1,
 				"Height": 1,
 				"IsHash": false,
@@ -437,7 +437,7 @@
 				"Name": "p2empty",
 				"PosX": 129,
 				"PosY": 133,
-				"Color": "#05120E",
+				"Color": "#11342A",
 				"Width": 1,
 				"Height": 1,
 				"IsHash": false,
@@ -452,7 +452,7 @@
 				"Name": "p3empty",
 				"PosX": 511,
 				"PosY": 55,
-				"Color": "#05110D",
+				"Color": "#11362C",
 				"Width": 1,
 				"Height": 1,
 				"IsHash": false,
@@ -467,7 +467,7 @@
 				"Name": "p4empty",
 				"PosX": 893,
 				"PosY": 134,
-				"Color": "#05120E",
+				"Color": "#11342A",
 				"Width": 1,
 				"Height": 1,
 				"IsHash": false,
@@ -482,7 +482,7 @@
 				"Name": "p5empty",
 				"PosX": 810,
 				"PosY": 435,
-				"Color": "#1B2713",
+				"Color": "#345621",
 				"Width": 1,
 				"Height": 1,
 				"IsHash": false,
@@ -510,7 +510,7 @@
 				"IsColor": false,
 				"IsOnlyNumber": false,
 				"InactiveUmbral": null,
-				"Umbral": 0.3
+				"Umbral": 0.32
 			},
 			{
 				"Category": "SitOut",
@@ -525,7 +525,7 @@
 				"IsColor": false,
 				"IsOnlyNumber": false,
 				"InactiveUmbral": null,
-				"Umbral": 0.3
+				"Umbral": 0.32
 			},
 			{
 				"Category": "SitOut",
@@ -540,7 +540,7 @@
 				"IsColor": false,
 				"IsOnlyNumber": false,
 				"InactiveUmbral": null,
-				"Umbral": 0.3
+				"Umbral": 0.32
 			},
 			{
 				"Category": "SitOut",
@@ -555,7 +555,7 @@
 				"IsColor": false,
 				"IsOnlyNumber": false,
 				"InactiveUmbral": null,
-				"Umbral": 0.3
+				"Umbral": 0.32
 			},
 			{
 				"Category": "SitOut",
@@ -570,7 +570,7 @@
 				"IsColor": false,
 				"IsOnlyNumber": false,
 				"InactiveUmbral": null,
-				"Umbral": 0.3
+				"Umbral": 0.32
 			}
 		]
 	},
@@ -621,6 +621,21 @@
 				"IsOnlyNumber": false,
 				"InactiveUmbral": null,
 				"Umbral": 0.87
+			},
+			{
+				"Category": "Table",
+				"Name": "pot",
+				"PosX": 445,
+				"PosY": 249,
+				"Color": null,
+				"Width": 130,
+				"Height": 15,
+				"IsHash": false,
+				"IsBoard": false,
+				"IsColor": false,
+				"IsOnlyNumber": true,
+				"InactiveUmbral": null,
+				"Umbral": 0.80
 			}
 		]
 	},

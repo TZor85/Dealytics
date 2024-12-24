@@ -1,10 +1,12 @@
 Revision:
 
-- Playing: OK
-- SitOut: OK
+- Names: OK - 1490ms
+- Playing: OK - 259ms
+- SitOut: OK - 1399ms
 - Table: OK
 - User: uAction
-- Empty: OK
-- Bets: OK
-- Dealer: OK
-- Board: OK
+- Empty: OK - 263ms
+- Bets: OK - 1420ms
+- Dealer: OK - 338ms
+- Board: OK - 540ms
+

@@ -1,9 +1,19 @@
 ﻿using SkiaSharp;
+using System.Collections.Concurrent;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace PokerVisionAI.App.Services;
 
 public class ImageCropperService
 {
+    private const int DefaultTolerance = 10;
+    private const double SimilarityThreshold = 90.0;
+
+    // Cache para evitar decodificar la misma imagen múltiples veces
+    private readonly ConcurrentDictionary<string, byte[]> _imageCache = new();
+    private readonly ConcurrentDictionary<string, WeakReference<Image>> _imageCache2 = new();
+
     public string CropImageToBase64(Image sourceImage, int x, int y, int width, int height)
     {
         try
@@ -47,25 +57,30 @@ public class ImageCropperService
     {
         try
         {
-            // Remover el encabezado de data URL si existe
-            if (base64String.Contains(","))
+            // Usar el base64String como clave del cache
+            if (_imageCache2.TryGetValue(base64String, out var weakRef))
             {
-                base64String = base64String.Split(',')[1];
+                // Si la imagen existe en el cache y no ha sido recolectada por el GC
+                if (weakRef.TryGetTarget(out var cachedImage))
+                {
+                    return cachedImage;
+                }
+                // Si la imagen fue recolectada, la removemos del cache
+                _imageCache2.TryRemove(base64String, out _);
             }
 
-            // Convertir base64 a byte array
-            byte[] imageBytes = Convert.FromBase64String(base64String);
+            // Procesamiento base64 optimizado
+            var imageBytes = GetImageBytesFromBase64(base64String);
+            var image = CreateImageFromBytes(imageBytes);
 
-            // Crear un MemoryStream con los bytes
-            using (var ms = new MemoryStream(imageBytes))
-            {
-                // Crear la imagen desde el MemoryStream
-                return Image.FromStream(ms);
-            }
+            // Almacenar en cache usando WeakReference
+            _imageCache2.TryAdd(base64String, new WeakReference<Image>(image));
+
+            return image;
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error al convertir base64 a imagen: {ex.Message}");
+            throw new Exception($"Error al convertir base64 a imagen: {ex.Message}", ex);
         }
     }
 
@@ -93,48 +108,147 @@ public class ImageCropperService
     {
         try
         {
-            using (Image img1 = Base64ToImage(base64Image1))
-            using (Image img2 = Base64ToImage(base64Image2))
-            {
-                // Verificar dimensiones
-                if (img1.Width != img2.Width || img1.Height != img2.Height)
-                    return 0;
+            using var bitmap1 = GetLockedBitmap(base64Image1);
+            using var bitmap2 = GetLockedBitmap(base64Image2);
 
-                using (Bitmap bmp1 = new Bitmap(img1))
-                using (Bitmap bmp2 = new Bitmap(img2))
-                {
-                    int pixelesSimilares = 0;
-                    int totalPixeles = bmp1.Width * bmp1.Height;
-                    int tolerancia = 10; // Aumentamos la tolerancia para cartas de póker
+            if (!AreCompatibleDimensions(bitmap1, bitmap2))
+                return 0;
 
-                    for (int i = 0; i < bmp1.Width; i++)
-                    {
-                        for (int j = 0; j < bmp1.Height; j++)
-                        {
-                            Color pixel1 = bmp1.GetPixel(i, j);
-                            Color pixel2 = bmp2.GetPixel(i, j);
-
-                            // Comprobar similitud con mayor tolerancia
-                            if (Math.Abs(pixel1.R - pixel2.R) <= tolerancia &&
-                                Math.Abs(pixel1.G - pixel2.G) <= tolerancia &&
-                                Math.Abs(pixel1.B - pixel2.B) <= tolerancia)
-                            {
-                                pixelesSimilares++;
-                            }
-                        }
-                    }
-
-                    // Calculamos el porcentaje de similitud
-                    double porcentajeSimilitud = (double)pixelesSimilares / totalPixeles * 100;
-
-                    // Para cartas de póker, podemos usar un umbral más bajo
-                    return porcentajeSimilitud >= 90 ? porcentajeSimilitud : 0; // 90% de similitud es suficiente
-                }
-            }
+            return CalculateSimilarity(bitmap1, bitmap2);
         }
         catch (Exception ex)
         {
             throw new Exception($"Error al comparar imágenes de cartas: {ex.Message}");
         }
+    }
+
+    private FastBitmap GetLockedBitmap(string base64Image)
+    {
+        var imageBytes = GetOrAddToCache(base64Image);
+        using var ms = new MemoryStream(imageBytes);
+        using var image = Image.FromStream(ms);
+        return new FastBitmap(new Bitmap(image));
+    }
+
+    private byte[] GetOrAddToCache(string base64Image)
+    {
+        return _imageCache.GetOrAdd(base64Image, key => Convert.FromBase64String(key));
+    }
+
+    private bool AreCompatibleDimensions(FastBitmap bmp1, FastBitmap bmp2)
+    {
+        return bmp1.Width == bmp2.Width && bmp1.Height == bmp2.Height;
+    }
+
+    private double CalculateSimilarity(FastBitmap bmp1, FastBitmap bmp2)
+    {
+        int pixelesSimilares = 0;
+        int totalPixeles = bmp1.Width * bmp1.Height;
+
+        var bytes1 = bmp1.GetBytes();
+        var bytes2 = bmp2.GetBytes();
+
+        // Procesar los bytes de 4 en 4 (ARGB)
+        for (int i = 0; i < bytes1.Length; i += 4)
+        {
+            if (IsPixelSimilar(bytes1, bytes2, i))
+            {
+                pixelesSimilares++;
+            }
+        }
+
+        double porcentajeSimilitud = (double)pixelesSimilares / totalPixeles * 100;
+        return porcentajeSimilitud >= SimilarityThreshold ? porcentajeSimilitud : 0;
+    }
+
+    private bool IsPixelSimilar(byte[] pixels1, byte[] pixels2, int offset)
+    {
+        return Math.Abs(pixels1[offset + 2] - pixels2[offset + 2]) <= DefaultTolerance && // R
+               Math.Abs(pixels1[offset + 1] - pixels2[offset + 1]) <= DefaultTolerance && // G
+               Math.Abs(pixels1[offset] - pixels2[offset]) <= DefaultTolerance;   // B
+    }
+
+    private static byte[] GetImageBytesFromBase64(string base64String)
+    {
+        // Optimización: Usar Span para evitar crear strings innecesarios
+        ReadOnlySpan<char> base64Span = base64String.AsSpan();
+        int commaIndex = base64Span.IndexOf(',');
+
+        if (commaIndex >= 0)
+        {
+            base64Span = base64Span.Slice(commaIndex + 1);
+        }
+
+        return Convert.FromBase64String(base64Span.ToString());
+    }
+
+    private static Image CreateImageFromBytes(byte[] imageBytes)
+    {
+        try
+        {
+            // Crear MemoryStream con capacidad inicial exacta
+            using var ms = new MemoryStream(imageBytes, writable: false);
+            return Image.FromStream(ms, useEmbeddedColorManagement: false, validateImageData: false);
+        }
+        catch
+        {
+            // Si falla, intentar con el método más seguro
+            using var ms = new MemoryStream(imageBytes);
+            return Image.FromStream(ms);
+        }
+    }
+
+    // Método para limpiar el cache cuando sea necesario
+    public void CleanImageCache()
+    {
+        foreach (var kvp in _imageCache2.ToList())
+        {
+            if (!kvp.Value.TryGetTarget(out _))
+            {
+                _imageCache2.TryRemove(kvp.Key, out _);
+            }
+        }
+    }
+}
+
+// Clase auxiliar para acceso rápido a los datos de la imagen
+public class FastBitmap : IDisposable
+{
+    private readonly Bitmap _bitmap;
+    private BitmapData _bitmapData;
+    private byte[] _bytes;
+
+    public int Width => _bitmap.Width;
+    public int Height => _bitmap.Height;
+
+    public FastBitmap(Bitmap bitmap)
+    {
+        _bitmap = bitmap;
+        Lock();
+    }
+
+    private void Lock()
+    {
+        var rect = new Rectangle(0, 0, _bitmap.Width, _bitmap.Height);
+        _bitmapData = _bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+        int bytes = Math.Abs(_bitmapData.Stride) * _bitmap.Height;
+        _bytes = new byte[bytes];
+        Marshal.Copy(_bitmapData.Scan0, _bytes, 0, bytes);
+    }
+
+    public byte[] GetBytes()
+    {
+        return _bytes;
+    }
+
+    public void Dispose()
+    {
+        if (_bitmapData != null)
+        {
+            _bitmap.UnlockBits(_bitmapData);
+            _bitmapData = null;
+        }
+        _bitmap.Dispose();
     }
 }
