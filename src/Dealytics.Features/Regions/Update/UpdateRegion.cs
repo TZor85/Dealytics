@@ -27,7 +27,22 @@ public class UpdateRegion
                 region.Regions?.Remove(regionToRemove);
             }
 
-            var regionCategory = new Domain.ValueObjects.Region(request.Category, request.Name, request.PosX, request.PosY, request.Width, request.Height, regionToRemove?.IsHash, regionToRemove?.IsColor, regionToRemove?.IsBoard, regionToRemove?.Color, regionToRemove?.IsOnlyNumber, regionToRemove?.InactiveUmbral, regionToRemove?.Umbral);
+            var regionCategory = new Domain.ValueObjects.Region
+            {
+                Category = request.Category,
+                Name = request.Name,
+                PosX = request.PosX,
+                PosY = request.PosY,
+                Width = request.Width,
+                Height = request.Height,
+                IsHash = regionToRemove?.IsHash,
+                IsColor = regionToRemove?.IsColor,
+                IsBoard = regionToRemove?.IsBoard,
+                Color = request?.Color,
+                IsOnlyNumber = regionToRemove?.IsOnlyNumber,
+                InactiveUmbral = request?.InactiveUmbral,
+                Umbral = request?.Umbral
+            };
 
             region.Regions?.Add(regionCategory);
 

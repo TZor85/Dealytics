@@ -36,8 +36,18 @@
             tpConfig = new TabPage();
             tcConfiguration = new TabControl();
             tbOcr = new TabPage();
+            btnUpdateConfig = new Button();
+            groupBox4 = new GroupBox();
+            txtColorConfig = new TextBox();
+            pbColorRegionConfig = new PictureBox();
+            label5 = new Label();
+            Tamaño = new GroupBox();
+            label4 = new Label();
+            label3 = new Label();
+            numHeight = new NumericUpDown();
+            numWidth = new NumericUpDown();
             groupBox3 = new GroupBox();
-            numericUpDown1 = new NumericUpDown();
+            numUmbralInactive = new NumericUpDown();
             label7 = new Label();
             numUmbralActive = new NumericUpDown();
             label6 = new Label();
@@ -47,13 +57,6 @@
             label1 = new Label();
             numPosY = new NumericUpDown();
             numPosX = new NumericUpDown();
-            label4 = new Label();
-            label3 = new Label();
-            numHeight = new NumericUpDown();
-            numWidth = new NumericUpDown();
-            txtColorConfig = new TextBox();
-            pbColorRegionConfig = new PictureBox();
-            label5 = new Label();
             pbCartas = new PictureBox();
             btnCard = new Button();
             lbHexadecimal = new Label();
@@ -89,6 +92,11 @@
             btnNextDebug = new Button();
             btnPreviousDebug = new Button();
             panel3 = new Panel();
+            lbUserAction = new Label();
+            lbUserBet = new Label();
+            pbUserCard1 = new PictureBox();
+            pbUserCard0 = new PictureBox();
+            btnUserDebug = new Button();
             lbPot = new Label();
             lbIsFlop = new Label();
             lbTableHand = new Label();
@@ -142,15 +150,17 @@
             tpConfig.SuspendLayout();
             tcConfiguration.SuspendLayout();
             tbOcr.SuspendLayout();
+            groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbColorRegionConfig).BeginInit();
+            Tamaño.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numHeight).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numWidth).BeginInit();
             groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numUmbralInactive).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUmbralActive).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numPosY).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numPosX).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numHeight).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numWidth).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pbColorRegionConfig).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbCartas).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbColorDebug).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbImageTextDebug).BeginInit();
@@ -165,6 +175,8 @@
             tbInit.SuspendLayout();
             tpDebug.SuspendLayout();
             panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbUserCard1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbUserCard0).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbCard5).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbCard4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pbCard3).BeginInit();
@@ -207,7 +219,7 @@
             // 
             // pbImageGame
             // 
-            pbImageGame.Location = new Point(199, 82);
+            pbImageGame.Location = new Point(193, 76);
             pbImageGame.Name = "pbImageGame";
             pbImageGame.Size = new Size(1025, 727);
             pbImageGame.TabIndex = 1;
@@ -240,11 +252,11 @@
             // 
             // tbOcr
             // 
+            tbOcr.Controls.Add(btnUpdateConfig);
+            tbOcr.Controls.Add(groupBox4);
+            tbOcr.Controls.Add(Tamaño);
             tbOcr.Controls.Add(groupBox3);
             tbOcr.Controls.Add(groupBox1);
-            tbOcr.Controls.Add(txtColorConfig);
-            tbOcr.Controls.Add(pbColorRegionConfig);
-            tbOcr.Controls.Add(label5);
             tbOcr.Controls.Add(pbCartas);
             tbOcr.Controls.Add(btnCard);
             tbOcr.Controls.Add(lbHexadecimal);
@@ -265,27 +277,123 @@
             tbOcr.Text = "OCR";
             tbOcr.UseVisualStyleBackColor = true;
             // 
+            // btnUpdateConfig
+            // 
+            btnUpdateConfig.Location = new Point(39, 698);
+            btnUpdateConfig.Name = "btnUpdateConfig";
+            btnUpdateConfig.Size = new Size(75, 23);
+            btnUpdateConfig.TabIndex = 34;
+            btnUpdateConfig.Text = "Actualizar";
+            btnUpdateConfig.UseVisualStyleBackColor = true;
+            btnUpdateConfig.Click += btnUpdateConfig_Click;
+            // 
+            // groupBox4
+            // 
+            groupBox4.Controls.Add(txtColorConfig);
+            groupBox4.Controls.Add(pbColorRegionConfig);
+            groupBox4.Controls.Add(label5);
+            groupBox4.Location = new Point(3, 583);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new Size(173, 63);
+            groupBox4.TabIndex = 33;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Color";
+            // 
+            // txtColorConfig
+            // 
+            txtColorConfig.Location = new Point(78, 23);
+            txtColorConfig.MaxLength = 7;
+            txtColorConfig.Name = "txtColorConfig";
+            txtColorConfig.Size = new Size(63, 23);
+            txtColorConfig.TabIndex = 30;
+            // 
+            // pbColorRegionConfig
+            // 
+            pbColorRegionConfig.Location = new Point(52, 24);
+            pbColorRegionConfig.Name = "pbColorRegionConfig";
+            pbColorRegionConfig.Size = new Size(20, 20);
+            pbColorRegionConfig.TabIndex = 29;
+            pbColorRegionConfig.TabStop = false;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(7, 26);
+            label5.Name = "label5";
+            label5.Size = new Size(39, 15);
+            label5.TabIndex = 28;
+            label5.Text = "Color:";
+            // 
+            // Tamaño
+            // 
+            Tamaño.Controls.Add(label4);
+            Tamaño.Controls.Add(label3);
+            Tamaño.Controls.Add(numHeight);
+            Tamaño.Controls.Add(numWidth);
+            Tamaño.Location = new Point(3, 435);
+            Tamaño.Name = "Tamaño";
+            Tamaño.Size = new Size(173, 63);
+            Tamaño.TabIndex = 32;
+            Tamaño.TabStop = false;
+            Tamaño.Text = "Tamaño";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(90, 30);
+            label4.Name = "label4";
+            label4.Size = new Size(19, 15);
+            label4.TabIndex = 32;
+            label4.Text = "H:";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(2, 30);
+            label3.Name = "label3";
+            label3.Size = new Size(21, 15);
+            label3.TabIndex = 31;
+            label3.Text = "W:";
+            // 
+            // numHeight
+            // 
+            numHeight.Location = new Point(113, 26);
+            numHeight.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numHeight.Name = "numHeight";
+            numHeight.Size = new Size(60, 23);
+            numHeight.TabIndex = 30;
+            // 
+            // numWidth
+            // 
+            numWidth.Location = new Point(24, 26);
+            numWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numWidth.Name = "numWidth";
+            numWidth.Size = new Size(60, 23);
+            numWidth.TabIndex = 29;
+            // 
             // groupBox3
             // 
-            groupBox3.Controls.Add(numericUpDown1);
+            groupBox3.Controls.Add(numUmbralInactive);
             groupBox3.Controls.Add(label7);
             groupBox3.Controls.Add(numUmbralActive);
             groupBox3.Controls.Add(label6);
-            groupBox3.Location = new Point(3, 457);
+            groupBox3.Location = new Point(3, 498);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(173, 85);
             groupBox3.TabIndex = 31;
             groupBox3.TabStop = false;
             groupBox3.Text = "Umbral";
             // 
-            // numericUpDown1
+            // numUmbralInactive
             // 
-            numericUpDown1.Location = new Point(68, 51);
-            numericUpDown1.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(60, 23);
-            numericUpDown1.TabIndex = 33;
-            numericUpDown1.ValueChanged += numericUpDown1_ValueChanged;
+            numUmbralInactive.DecimalPlaces = 2;
+            numUmbralInactive.Increment = new decimal(new int[] { 1, 0, 0, 131072 });
+            numUmbralInactive.Location = new Point(68, 51);
+            numUmbralInactive.Maximum = new decimal(new int[] { 1, 0, 0, 0 });
+            numUmbralInactive.Name = "numUmbralInactive";
+            numUmbralInactive.Size = new Size(60, 23);
+            numUmbralInactive.TabIndex = 33;
+            numUmbralInactive.ValueChanged += numUmbralInactive_ValueChanged;
             // 
             // label7
             // 
@@ -298,11 +406,14 @@
             // 
             // numUmbralActive
             // 
+            numUmbralActive.DecimalPlaces = 2;
+            numUmbralActive.Increment = new decimal(new int[] { 1, 0, 0, 131072 });
             numUmbralActive.Location = new Point(68, 22);
-            numUmbralActive.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numUmbralActive.Maximum = new decimal(new int[] { 1, 0, 0, 0 });
             numUmbralActive.Name = "numUmbralActive";
             numUmbralActive.Size = new Size(60, 23);
             numUmbralActive.TabIndex = 31;
+            numUmbralActive.ValueChanged += numUmbralActive_ValueChanged;
             // 
             // label6
             // 
@@ -320,13 +431,9 @@
             groupBox1.Controls.Add(label1);
             groupBox1.Controls.Add(numPosY);
             groupBox1.Controls.Add(numPosX);
-            groupBox1.Controls.Add(label4);
-            groupBox1.Controls.Add(label3);
-            groupBox1.Controls.Add(numHeight);
-            groupBox1.Controls.Add(numWidth);
             groupBox1.Location = new Point(3, 370);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(173, 87);
+            groupBox1.Size = new Size(173, 63);
             groupBox1.TabIndex = 30;
             groupBox1.TabStop = false;
             groupBox1.Text = "Posición";
@@ -365,6 +472,7 @@
             numPosY.Name = "numPosY";
             numPosY.Size = new Size(60, 23);
             numPosY.TabIndex = 30;
+            numPosY.ValueChanged += NumericUpDown_ValueChanged;
             // 
             // numPosX
             // 
@@ -373,66 +481,7 @@
             numPosX.Name = "numPosX";
             numPosX.Size = new Size(60, 23);
             numPosX.TabIndex = 29;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(90, 57);
-            label4.Name = "label4";
-            label4.Size = new Size(19, 15);
-            label4.TabIndex = 28;
-            label4.Text = "H:";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(-1, 57);
-            label3.Name = "label3";
-            label3.Size = new Size(21, 15);
-            label3.TabIndex = 27;
-            label3.Text = "W:";
-            // 
-            // numHeight
-            // 
-            numHeight.Location = new Point(113, 53);
-            numHeight.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            numHeight.Name = "numHeight";
-            numHeight.Size = new Size(60, 23);
-            numHeight.TabIndex = 26;
-            // 
-            // numWidth
-            // 
-            numWidth.Location = new Point(24, 53);
-            numWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            numWidth.Name = "numWidth";
-            numWidth.Size = new Size(60, 23);
-            numWidth.TabIndex = 25;
-            // 
-            // txtColorConfig
-            // 
-            txtColorConfig.Location = new Point(69, 644);
-            txtColorConfig.MaxLength = 7;
-            txtColorConfig.Name = "txtColorConfig";
-            txtColorConfig.Size = new Size(63, 23);
-            txtColorConfig.TabIndex = 27;
-            txtColorConfig.TextChanged += txtColorConfig_TextChanged;
-            // 
-            // pbColorRegionConfig
-            // 
-            pbColorRegionConfig.Location = new Point(43, 645);
-            pbColorRegionConfig.Name = "pbColorRegionConfig";
-            pbColorRegionConfig.Size = new Size(20, 20);
-            pbColorRegionConfig.TabIndex = 26;
-            pbColorRegionConfig.TabStop = false;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(-2, 647);
-            label5.Name = "label5";
-            label5.Size = new Size(39, 15);
-            label5.TabIndex = 25;
-            label5.Text = "Color:";
+            numPosX.ValueChanged += NumericUpDown_ValueChanged;
             // 
             // pbCartas
             // 
@@ -806,6 +855,11 @@
             // panel3
             // 
             panel3.BorderStyle = BorderStyle.FixedSingle;
+            panel3.Controls.Add(lbUserAction);
+            panel3.Controls.Add(lbUserBet);
+            panel3.Controls.Add(pbUserCard1);
+            panel3.Controls.Add(pbUserCard0);
+            panel3.Controls.Add(btnUserDebug);
             panel3.Controls.Add(lbPot);
             panel3.Controls.Add(lbIsFlop);
             panel3.Controls.Add(lbTableHand);
@@ -856,6 +910,50 @@
             panel3.Name = "panel3";
             panel3.Size = new Size(198, 813);
             panel3.TabIndex = 6;
+            // 
+            // lbUserAction
+            // 
+            lbUserAction.AutoSize = true;
+            lbUserAction.Location = new Point(7, 635);
+            lbUserAction.Name = "lbUserAction";
+            lbUserAction.Size = new Size(12, 15);
+            lbUserAction.TabIndex = 62;
+            lbUserAction.Text = "-";
+            // 
+            // lbUserBet
+            // 
+            lbUserBet.AutoSize = true;
+            lbUserBet.Location = new Point(7, 615);
+            lbUserBet.Name = "lbUserBet";
+            lbUserBet.Size = new Size(12, 15);
+            lbUserBet.TabIndex = 61;
+            lbUserBet.Text = "-";
+            // 
+            // pbUserCard1
+            // 
+            pbUserCard1.Location = new Point(46, 659);
+            pbUserCard1.Name = "pbUserCard1";
+            pbUserCard1.Size = new Size(20, 35);
+            pbUserCard1.TabIndex = 59;
+            pbUserCard1.TabStop = false;
+            // 
+            // pbUserCard0
+            // 
+            pbUserCard0.Location = new Point(20, 659);
+            pbUserCard0.Name = "pbUserCard0";
+            pbUserCard0.Size = new Size(20, 35);
+            pbUserCard0.TabIndex = 58;
+            pbUserCard0.TabStop = false;
+            // 
+            // btnUserDebug
+            // 
+            btnUserDebug.Location = new Point(7, 589);
+            btnUserDebug.Name = "btnUserDebug";
+            btnUserDebug.Size = new Size(75, 23);
+            btnUserDebug.TabIndex = 57;
+            btnUserDebug.Text = "User";
+            btnUserDebug.UseVisualStyleBackColor = true;
+            btnUserDebug.Click += btnUserDebug_Click;
             // 
             // lbPot
             // 
@@ -1070,7 +1168,7 @@
             // 
             // pbCard5
             // 
-            pbCard5.Location = new Point(142, 125);
+            pbCard5.Location = new Point(142, 124);
             pbCard5.Name = "pbCard5";
             pbCard5.Size = new Size(20, 35);
             pbCard5.TabIndex = 33;
@@ -1300,17 +1398,21 @@
             tcConfiguration.ResumeLayout(false);
             tbOcr.ResumeLayout(false);
             tbOcr.PerformLayout();
+            groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pbColorRegionConfig).EndInit();
+            Tamaño.ResumeLayout(false);
+            Tamaño.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numUmbralInactive).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUmbralActive).EndInit();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numPosY).EndInit();
             ((System.ComponentModel.ISupportInitialize)numPosX).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pbColorRegionConfig).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbCartas).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbColorDebug).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbImageTextDebug).EndInit();
@@ -1329,6 +1431,8 @@
             tpDebug.ResumeLayout(false);
             panel3.ResumeLayout(false);
             panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pbUserCard1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbUserCard0).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbCard5).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbCard4).EndInit();
             ((System.ComponentModel.ISupportInitialize)pbCard3).EndInit();
@@ -1429,12 +1533,9 @@
         private Label lbTableHand;
         private Label lbTableName;
         private Button btnTableDebug;
-        private PictureBox pbColorRegionConfig;
-        private Label label5;
-        private TextBox txtColorConfig;
         private GroupBox groupBox1;
         private GroupBox groupBox3;
-        private NumericUpDown numericUpDown1;
+        private NumericUpDown numUmbralInactive;
         private Label label7;
         private NumericUpDown numUmbralActive;
         private Label label6;
@@ -1443,9 +1544,20 @@
         private Label label1;
         private NumericUpDown numPosY;
         private NumericUpDown numPosX;
+        private GroupBox Tamaño;
         private Label label4;
         private Label label3;
         private NumericUpDown numHeight;
         private NumericUpDown numWidth;
+        private Button btnUpdateConfig;
+        private GroupBox groupBox4;
+        private TextBox txtColorConfig;
+        private PictureBox pbColorRegionConfig;
+        private Label label5;
+        private Button btnUserDebug;
+        private Label lbUserAction;
+        private Label lbUserBet;
+        private PictureBox pbUserCard1;
+        private PictureBox pbUserCard0;
     }
 }

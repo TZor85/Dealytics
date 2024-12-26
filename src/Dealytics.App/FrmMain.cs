@@ -5,6 +5,7 @@ using Dealytics.App.Overlays;
 using Dealytics.App.Services;
 using Dealytics.Domain.Dtos;
 using Dealytics.Domain.Entities;
+using Dealytics.Domain.Enum;
 using Dealytics.Domain.Mappers;
 using Dealytics.Domain.ValueObjects;
 using Dealytics.Features.Action;
@@ -13,13 +14,13 @@ using Dealytics.Features.Card;
 using Dealytics.Features.Card.CreateAll;
 using Dealytics.Features.Regions;
 using Dealytics.Features.Regions.CreateAll;
+using Emgu.CV.Dnn;
 using Marten;
+using Marten.Linq.MatchesSql;
 using PokerVisionAI.App.Services;
 using SkiaSharp;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
 
 namespace Dealytics.App;
 
@@ -151,7 +152,7 @@ public partial class FrmMain : Form
     }
 
     //TODO: Evento que se ejecuta automáticamente cada vez que se activa una ventana con la palabra clave
-    private void Monitor_OnWindowChanged(object? sender, WindowChangedEventArgs e)
+    private async void Monitor_OnWindowChanged(object? sender, WindowChangedEventArgs e)
     {
         // Este método se ejecutará cada vez que cambie la ventana activa
         // que contenga la palabra clave
@@ -178,11 +179,7 @@ public partial class FrmMain : Form
         SaveImage(image);
         pbImageGame.Image = image;
 
-        //LoadNames(false);
-
-        //pbImagenOcr.Image = image;
-
-        // Aquí puedes agregar cualquier lógica adicional que necesites
+        await Task.Run(async () => await ObtainDataTable());
     }
 
 
@@ -475,11 +472,17 @@ public partial class FrmMain : Form
                     numPosY.Value = _selectedRegion.PosY;
                     numWidth.Value = _selectedRegion.Width;
                     numHeight.Value = _selectedRegion.Height;
-                    pbColorRegionConfig.BackColor = ColorTranslator.FromHtml(_selectedRegion?.Color ?? "#000000");
-                    txtColorConfig.Text = (_selectedRegion?.Color ?? "NOCOLOR").ToUpper();
+
+                    if (_selectedRegion.Color != null)
+                    {
+                        pbColorRegionConfig.BackColor = ColorTranslator.FromHtml(_selectedRegion!.Color);
+                        txtColorConfig.Text = (_selectedRegion!.Color).ToUpper();
+                    }
 
                     _umbral = _selectedRegion?.Umbral.GetValueOrDefault() ?? 0f;
                     _inactiveUmbral = _selectedRegion?.InactiveUmbral.GetValueOrDefault() ?? 0;
+                    numUmbralActive.Value = (decimal)(_selectedRegion?.Umbral ?? 0);
+                    numUmbralInactive.Value = (decimal)(_selectedRegion?.InactiveUmbral ?? 0);
 
                     // Calcular escala preservando el aspect ratio de la imagen
                     float ratio = Math.Min(
@@ -715,30 +718,39 @@ public partial class FrmMain : Form
         }
     }
 
+    private async Task ObtainDataTable(bool debug = false)
+    {
+        _dataRegions = new DataRegions();
+        LoadNames(debug);
+        await LoadBoard(debug);
+        LoadDealer(debug);
+        LoadBets(debug);
+        LoadPlaying(debug);
+        LoadEmpty(debug);
+        LoadSitout(debug);
+        LoadTable(debug);
+        await LoadUser(debug);
+
+        if (debug)
+        {
+            ObtainNames();
+            ObtainBoard();
+            ObtainDealer();
+            ObtainBets();
+            ObtainPlaying();
+            ObtainEmpty();
+            ObtainSitOut();
+            ObtainTable();
+            ObtainUser();
+        }
+    }
+
     #region Debug
+
 
     private async void btnDebugManual_Click(object sender, EventArgs e)
     {
-        _dataRegions = new DataRegions();
-        LoadNames(true);
-        await Task.Run(async () => await LoadBoard(true));
-        LoadDealer(true);
-        LoadBets(true);
-        LoadPlaying(true);
-        LoadEmpty(true);
-        LoadSitout(true);
-        LoadTable(true);
-
-
-        //Load data to labels
-        ObtainNames();
-        ObtainBoard();
-        ObtainDealer();
-        ObtainBets();
-        ObtainPlaying();
-        ObtainEmpty();
-        ObtainSitOut();
-        ObtainTable();
+        await Task.Run(async () => await ObtainDataTable(true));
     }
 
     private void btnNamesDebug_Click(object sender, EventArgs e)
@@ -788,32 +800,37 @@ public partial class FrmMain : Form
         LoadTable(true);
         ObtainTable();
     }
+    private async void btnUserDebug_Click(object sender, EventArgs e)
+    {
+        await Task.Run(async () => await LoadUser(true));
+        ObtainUser();
+    }
 
     private void ObtainNames()
     {
-        lbP1Name.Text = $"P1: {_dataRegions.P1Name}";
-        lbP2Name.Text = $"P2: {_dataRegions.P2Name}";
-        lbP3Name.Text = $"P3: {_dataRegions.P3Name}";
-        lbP4Name.Text = $"P4: {_dataRegions.P4Name}";
-        lbP5Name.Text = $"P5: {_dataRegions.P5Name}";
+        lbP1Name.Text = $"P1: {_dataRegions.Players?[0].Name} ";
+        lbP2Name.Text = $"P2: {_dataRegions.Players?[1].Name}";
+        lbP3Name.Text = $"P3: {_dataRegions.Players?[2].Name}";
+        lbP4Name.Text = $"P4: {_dataRegions.Players?[3].Name}";
+        lbP5Name.Text = $"P5: {_dataRegions.Players?[4].Name}";
     }
 
     private void ObtainBoard()
     {
-        if (!string.IsNullOrEmpty(_dataRegions.Card1?.ImageBase64))
-            pbCard1.Image = _imageCropperService.Base64ToImage(_dataRegions.Card1.ImageBase64);
+        if (!string.IsNullOrEmpty(_dataRegions.BoardCards?[0].ImageBase64))
+            pbCard1.Image = _imageCropperService.Base64ToImage(_dataRegions.BoardCards?[0].ImageBase64 ?? string.Empty);
 
-        if (!string.IsNullOrEmpty(_dataRegions.Card2?.ImageBase64))
-            pbCard2.Image = _imageCropperService.Base64ToImage(_dataRegions.Card2.ImageBase64);
+        if (!string.IsNullOrEmpty(_dataRegions.BoardCards?[1]?.ImageBase64))
+            pbCard2.Image = _imageCropperService.Base64ToImage(_dataRegions.BoardCards?[1].ImageBase64 ?? string.Empty);
 
-        if (!string.IsNullOrEmpty(_dataRegions.Card3?.ImageBase64))
-            pbCard3.Image = _imageCropperService.Base64ToImage(_dataRegions.Card3.ImageBase64);
+        if (!string.IsNullOrEmpty(_dataRegions.BoardCards?[2]?.ImageBase64))
+            pbCard3.Image = _imageCropperService.Base64ToImage(_dataRegions.BoardCards?[2].ImageBase64 ?? string.Empty);
 
-        if (!string.IsNullOrEmpty(_dataRegions.Card4?.ImageBase64))
-            pbCard4.Image = _imageCropperService.Base64ToImage(_dataRegions.Card4.ImageBase64);
+        if (!string.IsNullOrEmpty(_dataRegions.BoardCards?[3]?.ImageBase64))
+            pbCard4.Image = _imageCropperService.Base64ToImage(_dataRegions.BoardCards?[3].ImageBase64 ?? string.Empty);
 
-        if (!string.IsNullOrEmpty(_dataRegions.Card5?.ImageBase64))
-            pbCard5.Image = _imageCropperService.Base64ToImage(_dataRegions.Card5.ImageBase64);
+        if (!string.IsNullOrEmpty(_dataRegions.BoardCards?[4]?.ImageBase64))
+            pbCard5.Image = _imageCropperService.Base64ToImage(_dataRegions.BoardCards?[4].ImageBase64 ?? string.Empty);
     }
 
     private void ObtainDealer()
@@ -823,74 +840,150 @@ public partial class FrmMain : Form
 
     private void ObtainBets()
     {
-        lbP1Bet.Text = $"P1: {_dataRegions.P1Bet.ToString()}";
-        lbP2Bet.Text = $"P2: {_dataRegions.P2Bet.ToString()}";
-        lbP3Bet.Text = $"P3: {_dataRegions.P3Bet.ToString()}";
-        lbP4Bet.Text = $"P4: {_dataRegions.P4Bet.ToString()}";
-        lbP5Bet.Text = $"P5: {_dataRegions.P5Bet.ToString()}";
+        lbP1Bet.Text = $"P1: {_dataRegions.Players?[0].Bet.ToString()}";
+        lbP2Bet.Text = $"P2: {_dataRegions.Players?[1].Bet.ToString()}";
+        lbP3Bet.Text = $"P3: {_dataRegions.Players?[2].Bet.ToString()}";
+        lbP4Bet.Text = $"P4: {_dataRegions.Players?[3].Bet.ToString()}";
+        lbP5Bet.Text = $"P5: {_dataRegions.Players?[4].Bet.ToString()}";
     }
 
     private void ObtainPlaying()
     {
-        lbP1Playing.Text = $"P1: {(_dataRegions.P1Playing ? "Playing" : "Folded")}";
-        lbP1Playing.ForeColor = _dataRegions.P1Playing ? Color.Green : Color.Red;
+        lbP1Playing.Text = $"P1: {(_dataRegions.Players?[0].IsPlaying == true ? "Playing" : "Folded")}";
+        lbP1Playing.ForeColor = _dataRegions.Players?[0].IsPlaying == true ? Color.Green : Color.Red;
 
-        lbP2Playing.Text = $"P2: {(_dataRegions.P2Playing ? "Playing" : "Folded")}";
-        lbP2Playing.ForeColor = _dataRegions.P2Playing ? Color.Green : Color.Red;
+        lbP2Playing.Text = $"P2: {(_dataRegions.Players?[1].IsPlaying == true ? "Playing" : "Folded")}";
+        lbP2Playing.ForeColor = _dataRegions.Players?[1].IsPlaying == true ? Color.Green : Color.Red;
 
-        lbP3Playing.Text = $"P3: {(_dataRegions.P3Playing ? "Playing" : "Folded")}";
-        lbP3Playing.ForeColor = _dataRegions.P3Playing ? Color.Green : Color.Red;
+        lbP3Playing.Text = $"P3: {(_dataRegions.Players?[2].IsPlaying == true ? "Playing" : "Folded")}";
+        lbP3Playing.ForeColor = _dataRegions.Players?[2].IsPlaying == true ? Color.Green : Color.Red;
 
-        lbP4Playing.Text = $"P4: {(_dataRegions.P4Playing ? "Playing" : "Folded")}";
-        lbP4Playing.ForeColor = _dataRegions.P4Playing ? Color.Green : Color.Red;
+        lbP4Playing.Text = $"P4: {(_dataRegions.Players?[3].IsPlaying == true ? "Playing" : "Folded")}";
+        lbP4Playing.ForeColor = _dataRegions.Players?[3].IsPlaying == true ? Color.Green : Color.Red;
 
-        lbP5Playing.Text = $"P5: {(_dataRegions.P5Playing ? "Playing" : "Folded")}";
-        lbP5Playing.ForeColor = _dataRegions.P5Playing ? Color.Green : Color.Red;
+
+        lbP5Playing.Text = $"P5: {(_dataRegions.Players?[4].IsPlaying == true ? "Playing" : "Folded")}";
+        lbP5Playing.ForeColor = _dataRegions.Players?[4].IsPlaying == true ? Color.Green : Color.Red;
     }
 
     private void ObtainEmpty()
     {
-        lbP1Empty.Text = $"P1: {(_dataRegions.P1Empty ? "Empty" : "Not Empty")}";
-        lbP1Empty.ForeColor = _dataRegions.P1Empty ? Color.Green : Color.Red;
+        lbP1Empty.Text = $"P1: {(_dataRegions.Players?[0].IsEmpty == true ? "Empty" : "Not Empty")}";
+        lbP1Empty.ForeColor = _dataRegions.Players?[0].IsPlaying == true ? Color.Green : Color.Red;
 
-        lbP2Empty.Text = $"P2: {(_dataRegions.P2Empty ? "Empty" : "Not Empty")}";
-        lbP2Empty.ForeColor = _dataRegions.P2Empty ? Color.Green : Color.Red;
+        lbP2Empty.Text = $"P2: {(_dataRegions.Players?[1].IsPlaying == true ? "Empty" : "Not Empty")}";
+        lbP2Empty.ForeColor = _dataRegions.Players?[1].IsPlaying == true ? Color.Green : Color.Red;
 
-        lbP3Empty.Text = $"P3: {(_dataRegions.P3Empty ? "Empty" : "Not Empty")}";
-        lbP3Empty.ForeColor = _dataRegions.P3Empty ? Color.Green : Color.Red;
+        lbP3Empty.Text = $"P3: {(_dataRegions.Players?[2].IsPlaying == true ? "Empty" : "Not Empty")}";
+        lbP3Empty.ForeColor = _dataRegions.Players?[2].IsPlaying == true ? Color.Green : Color.Red;
 
-        lbP4Empty.Text = $"P4: {(_dataRegions.P4Empty ? "Empty" : "Not Empty")}";
-        lbP4Empty.ForeColor = _dataRegions.P4Empty ? Color.Green : Color.Red;
+        lbP4Empty.Text = $"P4: {(_dataRegions.Players?[3].IsPlaying == true ? "Empty" : "Not Empty")}";
+        lbP4Empty.ForeColor = _dataRegions.Players?[3].IsPlaying == true ? Color.Green : Color.Red;
 
-        lbP5Empty.Text = $"P5: {(_dataRegions.P5Empty ? "Empty" : "Not Empty")}";
-        lbP5Empty.ForeColor = _dataRegions.P5Empty ? Color.Green : Color.Red;
+        lbP5Empty.Text = $"P5: {(_dataRegions.Players?[4].IsPlaying == true ? "Empty" : "Not Empty")}";
+        lbP5Empty.ForeColor = _dataRegions.Players?[4].IsPlaying == true ? Color.Green : Color.Red;
 
     }
 
     private void ObtainSitOut()
     {
-        lbP1Sitout.Text = $"P1: {(_dataRegions.P1SitOut ? "SitOut" : "Not SitOut")}";
-        lbP1Sitout.ForeColor = _dataRegions.P1SitOut ? Color.Green : Color.Red;
+        lbP1Sitout.Text = $"P1: {(_dataRegions.Players?[0].IsSitOut == true ? "SitOut" : "Not SitOut")}";
+        lbP1Sitout.ForeColor = _dataRegions.Players?[0].IsSitOut == true ? Color.Green : Color.Red;
 
-        lbP2Sitout.Text = $"P2: {(_dataRegions.P2SitOut ? "SitOut" : "Not SitOut")}";
-        lbP2Sitout.ForeColor = _dataRegions.P2SitOut ? Color.Green : Color.Red;
+        lbP2Sitout.Text = $"P2: {(_dataRegions.Players?[1].IsSitOut == true ? "SitOut" : "Not SitOut")}";
+        lbP2Sitout.ForeColor = _dataRegions.Players?[1].IsSitOut == true ? Color.Green : Color.Red;
 
-        lbP3Sitout.Text = $"P3: {(_dataRegions.P3SitOut ? "SitOut" : "Not SitOut")}";
-        lbP3Sitout.ForeColor = _dataRegions.P3SitOut ? Color.Green : Color.Red;
+        lbP3Sitout.Text = $"P3: {(_dataRegions.Players?[2].IsSitOut == true ? "SitOut" : "Not SitOut")}";
+        lbP3Sitout.ForeColor = _dataRegions.Players?[2].IsSitOut == true ? Color.Green : Color.Red;
 
-        lbP4Sitout.Text = $"P4: {(_dataRegions.P4SitOut ? "SitOut" : "Not SitOut")}";
-        lbP4Sitout.ForeColor = _dataRegions.P4SitOut ? Color.Green : Color.Red;
+        lbP4Sitout.Text = $"P4: {(_dataRegions.Players?[3].IsSitOut == true ? "SitOut" : "Not SitOut")}";
+        lbP4Sitout.ForeColor = _dataRegions.Players?[3].IsSitOut == true ? Color.Green : Color.Red;
 
-        lbP5Sitout.Text = $"P5: {(_dataRegions.P5SitOut ? "SitOut" : "Not SitOut")}";
-        lbP5Sitout.ForeColor = _dataRegions.P5SitOut ? Color.Green : Color.Red;
+        lbP5Sitout.Text = $"P5: {(_dataRegions.Players?[4].IsSitOut == true ? "SitOut" : "Not SitOut")}";
+        lbP5Sitout.ForeColor = _dataRegions.Players?[4].IsSitOut == true ? Color.Green : Color.Red;
     }
 
     private void ObtainTable()
     {
-        lbTableName.Text = new string(_dataRegions.TableName.Where(char.IsLetter).ToArray());
-        lbTableHand.Text = _dataRegions.TableHand;
-        lbPot.Text = _dataRegions.Pot.ToString();
-        lbIsFlop.Text = _dataRegions.IsFlop ? "Flop" : "PreFlop";
+        lbTableName.Text = new string(_dataRegions.Table?.Name.Where(char.IsLetter).ToArray());
+        lbTableHand.Text = _dataRegions.Table?.Hand;
+        lbPot.Text = _dataRegions.Table?.Pot.ToString();
+        lbIsFlop.Text = _dataRegions.Table?.IsFlop == true ? "Flop" : "PreFlop";
+    }
+
+    private void ObtainUser()
+    {
+        lbUserBet.Text = $"Bet: {_dataRegions.User?.Bet.ToString()}";
+        lbUserAction.Text = _dataRegions.User?.Action == true ? "Action" : "No Action";
+        if (!string.IsNullOrEmpty(_dataRegions.User?.CardFace0.ImageBase64))
+            pbUserCard0.Image = _imageCropperService.Base64ToImage(_dataRegions.User.CardFace0.ImageBase64);
+        if (!string.IsNullOrEmpty(_dataRegions.User?.CardFace1.ImageBase64))
+            pbUserCard1.Image = _imageCropperService.Base64ToImage(_dataRegions.User.CardFace1.ImageBase64);
+    }
+
+    private async Task LoadUser(bool debug = false)
+    {
+        var image = debug ? pbImageDebug.Image : pbImageGame.Image;
+        var userCategory = _regionsCategories.FirstOrDefault(f => f.Id == "User");
+        if (userCategory?.Regions == null) return;
+
+        var userPropertyMapBet = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "u0bet", text => _dataRegions.User!.Bet = TryParseDecimal(text)}
+        };
+
+        foreach (var region in userCategory.Regions)
+        {
+            var text = ExtractTextWithFallback(image, region);
+
+            if (userPropertyMapBet.TryGetValue(region.Name, out var setter))
+            {
+                setter(text);
+            }
+        }
+
+        var userPropertyMapAction = new Dictionary<string, Action<bool>>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "uAction", action => _dataRegions.User!.Action = action },
+            { "dealer", action => _dataRegions.User!.IsDealer = action }
+        };
+
+        foreach (var region in userCategory.Regions)
+        {
+            if (userPropertyMapAction.TryGetValue(region.Name, out var setter))
+            {
+                var color = _colorDetectionService.GetPixelColor(image, region.PosX, region.PosY);
+                var hexColor = FormatColorToHex(color);
+
+                if (string.Equals(region.Color, hexColor, StringComparison.OrdinalIgnoreCase))
+                {
+                    setter(true);
+                }
+            }
+        }
+
+        var userPropertyMapCards = new Dictionary<string, Action<Card>>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "u0cardface0", card => _dataRegions.User!.CardFace0 = card },
+            { "u0cardface1", card => _dataRegions.User!.CardFace1 = card }
+        };
+
+        foreach (var region in userCategory.Regions)
+        {
+            var croppedImage = _imageCropperService.CropImageToBase64(image, region.PosX, region.PosY, region.Width, region.Height);
+            var bestMatch = await FindBestMatchingCard(croppedImage, _cardsImages.Value, debug);
+
+            if (bestMatch != null && userPropertyMapCards.TryGetValue(region.Name, out var setter))
+            {
+                setter(new Card
+                {
+                    Id = bestMatch.Name ?? string.Empty,
+                    ImageBase64 = bestMatch.ImageBase64 ?? string.Empty,
+                    Force = bestMatch.Force,
+                    Suit = bestMatch.Suit
+                });
+            }
+        }
     }
 
     private void LoadSitout(bool debug = false)
@@ -903,11 +996,11 @@ public partial class FrmMain : Form
         // Diccionario para mapear nombres de región a propiedades
         var sitOutPropertyMap = new Dictionary<string, Action<bool>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "p1sitout", value => _dataRegions.P1SitOut = value },
-            { "p2sitout", value => _dataRegions.P2SitOut = value },
-            { "p3sitout", value => _dataRegions.P3SitOut = value },
-            { "p4sitout", value => _dataRegions.P4SitOut = value },
-            { "p5sitout", value => _dataRegions.P5SitOut = value }
+            { "p1sitout", value => _dataRegions.Players![0].IsSitOut = value },
+            { "p2sitout", value => _dataRegions.Players![1].IsSitOut = value },
+            { "p3sitout", value => _dataRegions.Players![2].IsSitOut = value },
+            { "p4sitout", value => _dataRegions.Players![3].IsSitOut = value },
+            { "p5sitout", value => _dataRegions.Players![4].IsSitOut = value }
         };
 
         foreach (var region in sitOutCategory.Regions)
@@ -932,11 +1025,11 @@ public partial class FrmMain : Form
 
         var emptyPropertyMap = new Dictionary<string, Action<bool>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "p1empty", value => _dataRegions.P1Empty = value },
-            { "p2empty", value => _dataRegions.P2Empty = value },
-            { "p3empty", value => _dataRegions.P3Empty = value },
-            { "p4empty", value => _dataRegions.P4Empty = value },
-            { "p5empty", value => _dataRegions.P5Empty = value }
+            { "p1empty", value => _dataRegions.Players![0].IsEmpty = value },
+            { "p2empty", value => _dataRegions.Players![1].IsEmpty = value },
+            { "p3empty", value => _dataRegions.Players![2].IsEmpty = value },
+            { "p4empty", value => _dataRegions.Players![3].IsEmpty = value },
+            { "p5empty", value => _dataRegions.Players![4].IsEmpty = value }
         };
 
         foreach (var region in emptyCategory.Regions)
@@ -964,11 +1057,11 @@ public partial class FrmMain : Form
 
         var dealerPropertyMap = new Dictionary<string, Action<bool>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "p1playing", value => _dataRegions.P1Playing = value },
-            { "p2playing", value => _dataRegions.P2Playing = value },
-            { "p3playing", value => _dataRegions.P3Playing = value },
-            { "p4playing", value => _dataRegions.P4Playing = value },
-            { "p5playing", value => _dataRegions.P5Playing = value }
+            { "p1playing", value => _dataRegions.Players![0].IsPlaying = value },
+            { "p2playing", value => _dataRegions.Players![1].IsPlaying = value },
+            { "p3playing", value => _dataRegions.Players![2].IsPlaying = value },
+            { "p4playing", value => _dataRegions.Players![3].IsPlaying = value },
+            { "p5playing", value => _dataRegions.Players![4].IsPlaying = value }
         };
 
         foreach (var region in dealerCategory.Regions)
@@ -996,11 +1089,11 @@ public partial class FrmMain : Form
         // Diccionario para mapear nombres de región a propiedades
         var namePropertyMap = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "p1bet", text => _dataRegions.P1Bet = TryParseDecimal(text) },
-            { "p2bet", text => _dataRegions.P2Bet = TryParseDecimal(text) },
-            { "p3bet", text => _dataRegions.P3Bet = TryParseDecimal(text) },
-            { "p4bet", text => _dataRegions.P4Bet = TryParseDecimal(text) },
-            { "p5bet", text => _dataRegions.P5Bet = TryParseDecimal(text) }
+            { "p1bet", text => _dataRegions.Players![0].Bet = TryParseDecimal(text) },
+            { "p2bet", text => _dataRegions.Players![1].Bet = TryParseDecimal(text) },
+            { "p3bet", text => _dataRegions.Players![2].Bet = TryParseDecimal(text) },
+            { "p4bet", text => _dataRegions.Players![3].Bet = TryParseDecimal(text) },
+            { "p5bet", text => _dataRegions.Players![4].Bet = TryParseDecimal(text) }
         };
 
         foreach (var region in namesCategory.Regions)
@@ -1024,12 +1117,11 @@ public partial class FrmMain : Form
 
         var dealerPropertyMap = new Dictionary<string, Action<bool>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "p0dealer", value => _dataRegions.P0Dealer = value },
-            { "p1dealer", value => _dataRegions.P1Dealer = value },
-            { "p2dealer", value => _dataRegions.P2Dealer = value },
-            { "p3dealer", value => _dataRegions.P3Dealer = value },
-            { "p4dealer", value => _dataRegions.P4Dealer = value },
-            { "p5dealer", value => _dataRegions.P5Dealer = value }
+            { "p1dealer", value => _dataRegions.Players![0].IsDealer = value },
+            { "p2dealer", value => _dataRegions.Players![1].IsDealer = value },
+            { "p3dealer", value => _dataRegions.Players![2].IsDealer = value },
+            { "p4dealer", value => _dataRegions.Players![3].IsDealer = value },
+            { "p5dealer", value => _dataRegions.Players![4].IsDealer = value }
         };
 
         foreach (var region in dealerCategory.Regions)
@@ -1057,11 +1149,11 @@ public partial class FrmMain : Form
         // Diccionario para mapear nombres de región a propiedades
         var namePropertyMap = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "p1name", text => _dataRegions.P1Name = text },
-            { "p2name", text => _dataRegions.P2Name = text },
-            { "p3name", text => _dataRegions.P3Name = text },
-            { "p4name", text => _dataRegions.P4Name = text },
-            { "p5name", text => _dataRegions.P5Name = text }
+            { "p1name", text => _dataRegions.Players![0].Name = text },
+            { "p2name", text => _dataRegions.Players![1].Name = text },
+            { "p3name", text => _dataRegions.Players![2].Name = text },
+            { "p4name", text => _dataRegions.Players![3].Name = text },
+            { "p5name", text => _dataRegions.Players![4].Name = text }
         };
 
         foreach (var region in namesCategory.Regions)
@@ -1071,6 +1163,54 @@ public partial class FrmMain : Form
             if (namePropertyMap.TryGetValue(region.Name, out var setter))
             {
                 setter(text);
+            }
+        }
+    }
+
+    private async Task LoadBoard(bool debug = false)
+    {
+        var image = debug ? pbImageDebug.Image : pbImageGame.Image;
+        if (image == null)
+        {
+            MessageBox.Show("No se ha seleccionado una región o la imagen es nula.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
+
+        // Cargar cartas una sola vez si es necesario
+        if (_cardsImages == null)
+        {
+            _cardsImages = await _cardUseCases.GetAllCards.ExecuteAsync();
+            if (_cardsImages?.Value == null) return;
+        }
+
+        var boardCategory = _regionsCategories.FirstOrDefault(w => w.Id == "Board");
+        if (boardCategory?.Regions == null) return;
+
+        // Diccionario para mapear nombres de regiones a propiedades de _dataRegions
+        var cardPropertyMap = new Dictionary<string, Action<Card>>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "card1", card => _dataRegions.BoardCards![0] = new Board { Id = card.Id, BinaryValue = card.BinaryValue, Force = card.Force, ImageBase64 = card.ImageBase64, Suit = card.Suit, Hall = card.Hall, BettingRoundType = BettingRoundType.Flop } },
+            { "card2", card => _dataRegions.BoardCards![1] = new Board { Id = card.Id, BinaryValue = card.BinaryValue, Force = card.Force, ImageBase64 = card.ImageBase64, Suit = card.Suit, Hall = card.Hall, BettingRoundType = BettingRoundType.Flop } },
+            { "card3", card => _dataRegions.BoardCards![2] = new Board { Id = card.Id, BinaryValue = card.BinaryValue, Force = card.Force, ImageBase64 = card.ImageBase64, Suit = card.Suit, Hall = card.Hall, BettingRoundType = BettingRoundType.Flop } },
+            { "card4", card => _dataRegions.BoardCards![3] = new Board { Id = card.Id, BinaryValue = card.BinaryValue, Force = card.Force, ImageBase64 = card.ImageBase64, Suit = card.Suit, Hall = card.Hall, BettingRoundType = BettingRoundType.Turn } },
+            { "card5", card => _dataRegions.BoardCards![4] = new Board { Id = card.Id, BinaryValue = card.BinaryValue, Force = card.Force, ImageBase64 = card.ImageBase64, Suit = card.Suit, Hall = card.Hall, BettingRoundType = BettingRoundType.River } }
+        };
+
+        // Procesar cada región del tablero
+        foreach (var region in boardCategory.Regions)
+        {
+            var croppedImage = _imageCropperService.CropImageToBase64(image, region.PosX, region.PosY, region.Width, region.Height);
+            var bestMatch = await FindBestMatchingCard(croppedImage, _cardsImages.Value, debug);
+
+            if (bestMatch != null && cardPropertyMap.TryGetValue(region.Name, out var setter))
+            {
+                setter(new Card
+                {
+                    Id = bestMatch.Name ?? string.Empty,
+                    ImageBase64 = bestMatch.ImageBase64 ?? string.Empty,
+                    Force = bestMatch.Force,
+                    Suit = bestMatch.Suit
+                });
             }
         }
     }
@@ -1085,14 +1225,14 @@ public partial class FrmMain : Form
         // Diccionario para mapear nombres de región a propiedades
         var namePropertyMap = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "tablehand", text => _dataRegions.TableHand = text },
-            { "tablename", text => _dataRegions.TableName = text },
-            { "pot", text => _dataRegions.Pot = TryParseDecimal(text) }
+            { "tablehand", text => _dataRegions.Table!.Hand = text },
+            { "tablename", text => _dataRegions.Table!.Name = text },
+            { "pot", text => _dataRegions.Table!.Pot = TryParseDecimal(text) }
         };
 
         var namePropertyMapFlop = new Dictionary<string, Action<bool>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "isflop", value => _dataRegions.IsFlop = value },
+            { "isflop", value => _dataRegions.Table!.IsFlop = value },
         };
 
         foreach (var region in namesCategory.Regions)
@@ -1123,11 +1263,11 @@ public partial class FrmMain : Form
 
     private void ResetEmptyFlags()
     {
-        _dataRegions.P1Empty = false;
-        _dataRegions.P2Empty = false;
-        _dataRegions.P3Empty = false;
-        _dataRegions.P4Empty = false;
-        _dataRegions.P5Empty = false;
+        _dataRegions.Players![0].IsEmpty = false;
+        _dataRegions.Players![1].IsEmpty = false;
+        _dataRegions.Players![2].IsEmpty = false;
+        _dataRegions.Players![3].IsEmpty = false;
+        _dataRegions.Players![4].IsEmpty = false;
     }
 
     private static string FormatColorToHex(SKColor color)
@@ -1163,53 +1303,7 @@ public partial class FrmMain : Form
         return fallbackOcr.Text;
     }
 
-    private async Task LoadBoard(bool debug = false)
-    {
-        var image = debug ? pbImageDebug.Image : pbImageGame.Image;
-        if (image == null)
-        {
-            MessageBox.Show("No se ha seleccionado una región o la imagen es nula.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
-
-        // Cargar cartas una sola vez si es necesario
-        if (_cardsImages == null)
-        {
-            _cardsImages = await _cardUseCases.GetAllCards.ExecuteAsync();
-            if (_cardsImages?.Value == null) return;
-        }
-
-        var boardCategory = _regionsCategories.FirstOrDefault(w => w.Id == "Board");
-        if (boardCategory?.Regions == null) return;
-
-        // Diccionario para mapear nombres de regiones a propiedades de _dataRegions
-        var cardPropertyMap = new Dictionary<string, Action<Card>>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "card1", card => _dataRegions.Card1 = card },
-            { "card2", card => _dataRegions.Card2 = card },
-            { "card3", card => _dataRegions.Card3 = card },
-            { "card4", card => _dataRegions.Card4 = card },
-            { "card5", card => _dataRegions.Card5 = card }
-        };
-
-        // Procesar cada región del tablero
-        foreach (var region in boardCategory.Regions)
-        {
-            var croppedImage = _imageCropperService.CropImageToBase64(image, region.PosX, region.PosY, region.Width, region.Height);
-            var bestMatch = await FindBestMatchingCard(croppedImage, _cardsImages.Value, debug);
-
-            if (bestMatch != null && cardPropertyMap.TryGetValue(region.Name, out var setter))
-            {
-                setter(new Card
-                {
-                    Id = bestMatch.Name ?? string.Empty,
-                    ImageBase64 = bestMatch.ImageBase64 ?? string.Empty,
-                    Force = bestMatch.Force,
-                    Suit = bestMatch.Suit
-                });
-            }
-        }
-    }
+    
 
     private async Task<CardDTO?> FindBestMatchingCard(string imageToCompare, IEnumerable<CardDTO> cards, bool debug)
     {
@@ -1265,13 +1359,13 @@ public partial class FrmMain : Form
     {
         var dealers = new[]
         {
-        (Value: _dataRegions.P0Dealer, Name: "P0"),
-        (Value: _dataRegions.P1Dealer, Name: "P1"),
-        (Value: _dataRegions.P2Dealer, Name: "P2"),
-        (Value: _dataRegions.P3Dealer, Name: "P3"),
-        (Value: _dataRegions.P4Dealer, Name: "P4"),
-        (Value: _dataRegions.P5Dealer, Name: "P5")
-    };
+            (Value: _dataRegions.User!.IsDealer, Name: "Hero"),
+            (Value: _dataRegions.Players![0].IsDealer, Name: "P1"),
+            (Value: _dataRegions.Players![1].IsDealer, Name: "P2"),
+            (Value: _dataRegions.Players![2].IsDealer, Name: "P3"),
+            (Value: _dataRegions.Players![3].IsDealer, Name: "P4"),
+            (Value: _dataRegions.Players![4].IsDealer, Name: "P5")
+        };
 
         return dealers.FirstOrDefault(d => d.Value).Name ?? string.Empty;
     }
@@ -1291,10 +1385,49 @@ public partial class FrmMain : Form
         SaveImage(image);
     }
 
-    private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+    private void numUmbralActive_ValueChanged(object sender, EventArgs e)
     {
+        _umbral = (double)numUmbralActive.Value;
 
+        if (_selectedRegion != null)
+            _selectedRegion.Umbral = _umbral;
     }
+
+    private void numUmbralInactive_ValueChanged(object sender, EventArgs e)
+    {
+        _inactiveUmbral = (double)numUmbralInactive.Value;
+
+        if (_selectedRegion != null)
+            _selectedRegion.InactiveUmbral = _inactiveUmbral;
+    }
+
+    private async void btnUpdateConfig_Click(object sender, EventArgs e)
+    {
+        if (_selectedRegion != null)
+        {
+            _selectedRegion.PosX = (int)numPosX.Value;
+            _selectedRegion.PosY = (int)numPosY.Value;
+            _selectedRegion.Width = (int)numWidth.Value;
+            _selectedRegion.Height = (int)numHeight.Value;
+            _selectedRegion.Umbral = _umbral;
+            _selectedRegion.InactiveUmbral = _inactiveUmbral;
+            _selectedRegion.Color = txtColorConfig.Text;
+
+            await _regionUseCases.UpdateRegion.ExecuteAsync(
+                new Features.Regions.Update.UpdateRegionRequest(
+                    _selectedRegion?.Category ?? string.Empty,
+                    _selectedRegion?.Name ?? string.Empty,
+                    (int)numPosX.Value,
+                    (int)numPosY.Value,
+                    (int)numWidth.Value,
+                    (int)numHeight.Value,
+                    _umbral,
+                    _inactiveUmbral,
+                    txtColorConfig.Text));
+        }
+    }
+
+    
 }
 
 

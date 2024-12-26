@@ -2,7 +2,7 @@
 	"Name": "RaiseOverLimpers",
 	"Positions": [
 		{
-			"Name": "ROL BB",
+			"Name": "ROL BB vs SB",
 			"HeroPosition": "BigBlind",
 			"OpenRaiser": null,
 			"ThreeBetPosition": null,

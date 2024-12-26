@@ -1,69 +1,66 @@
 ﻿using Dealytics.Domain.Entities;
-using System.Drawing;
+using Dealytics.Domain.Enum;
 
 namespace Dealytics.Domain.ValueObjects;
 
+public class Player
+{
+    public string? Id { get; set; } = string.Empty;
+    public string? Name { get; set; } = string.Empty;
+    public bool IsDealer { get; set; }
+    public decimal Bet { get; set; }
+    public bool IsPlaying { get; set; }
+    public bool IsEmpty { get; set; }
+    public bool IsSitOut { get; set; }
+}
+
+public class Board : Card
+{    
+    public BettingRoundType? BettingRoundType { get; set; }
+}
+
+public class UserData
+{
+    public decimal Bet { get; set; }
+    public bool IsDealer { get; set; }
+    public Card CardFace0 { get; set; } = new Card { Id = string.Empty };
+    public Card CardFace1 { get; set; } = new Card { Id = string.Empty };
+    public bool Action { get; set; }
+}
+
+public class TableData
+{
+    public bool IsFlop { get; set; }
+    public string Hand { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public decimal Pot { get; set; }
+}
+
 public class DataRegions
 {
-    // Names
-    public string? P1Name { get; set; } = string.Empty;
-    public string? P2Name { get; set; } = string.Empty;
-    public string? P3Name { get; set; } = string.Empty;
-    public string? P4Name { get; set; } = string.Empty;
-    public string? P5Name { get; set; } = string.Empty;
+    private const int MAX_PLAYERS = 5; // Sin contar P0
 
-    // Board
-    public Card? Card1 { get; set; } = new Card { Id = string.Empty };
-    public Card? Card2 { get; set; } = new Card { Id = string.Empty };
-    public Card? Card3 { get; set; } = new Card { Id = string.Empty };
-    public Card? Card4 { get; set; } = new Card { Id = string.Empty };
-    public Card? Card5 { get; set; } = new Card { Id = string.Empty };
+    public List<Player>? Players { get; set; }
 
-    // Dealer
-    public bool P0Dealer { get; set; }
-    public bool P1Dealer { get; set; }
-    public bool P2Dealer { get; set; }
-    public bool P3Dealer { get; set; }
-    public bool P4Dealer { get; set; }
-    public bool P5Dealer { get; set; }
+    public List<Board>? BoardCards { get; set; }
 
-    // Bets
-    public decimal P1Bet { get; set; }
-    public decimal P2Bet { get; set; }
-    public decimal P3Bet { get; set; }
-    public decimal P4Bet { get; set; }
-    public decimal P5Bet { get; set; }
+    // Datos de la mesa
+    public TableData? Table { get; set; }
 
-    // Playing
-    public bool P1Playing { get; set; }
-    public bool P2Playing { get; set; }
-    public bool P3Playing { get; set; }
-    public bool P4Playing { get; set; }
-    public bool P5Playing { get; set; }
+    // Datos del usuario
+    public UserData? User { get; set; }
 
-    // Empty
-    public bool P1Empty { get; set; }
-    public bool P2Empty { get; set; }
-    public bool P3Empty { get; set; }
-    public bool P4Empty { get; set; }
-    public bool P5Empty { get; set; }
+    public DataRegions()
+    {
+        Players = Enumerable.Range(1, MAX_PLAYERS)
+               .Select(i => new Player { Id = $"P{i}" })
+               .ToList();
 
-    // SitOut
-    public bool P1SitOut { get; set; }
-    public bool P2SitOut { get; set; }
-    public bool P3SitOut { get; set; }
-    public bool P4SitOut { get; set; }
-    public bool P5SitOut { get; set; }
+        BoardCards = Enumerable.Range(0, 5)
+            .Select(_ => new Board { Id = string.Empty })
+            .ToList();
 
-    // Table
-    public bool IsFlop { get; set; }
-    public string? TableHand { get; set; } = string.Empty;
-    public string? TableName { get; set; } = string.Empty;
-    public decimal Pot { get; set; }
-
-    // User
-    public decimal U0Bet { get; set; }
-    public string? U0CardFace0 { get; set; } = string.Empty;
-    public string? U0CardFace1 { get; set; } = string.Empty;
-    public bool UAction { get; set; }
+        Table = new TableData();
+        User = new UserData();
+    }
 }
