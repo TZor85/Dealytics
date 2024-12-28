@@ -1,13 +1,13 @@
 ﻿using Dealytics.Domain.Dtos;
 using System.Text.Json;
 
-namespace Dealytics.Features.InitialConfig.Action
+namespace Dealytics.Features.InitialConfig.Table
 {
-    public class GetAllActions
+    public class GetAllTables
     {
         private readonly IFileDialogService _fileDialogService;
 
-        public GetAllActions(IFileDialogService fileDialogService)
+        public GetAllTables(IFileDialogService fileDialogService)
         {
             _fileDialogService = fileDialogService;
         }

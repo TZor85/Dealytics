@@ -2,10 +2,11 @@
 
 public enum TablePosition
 {
-    Dealer,
-    Cutoff,
-    Middle,
-    Early,
+    None,
+    EarlyPosition,
+    MiddlePosition,
+    CutOff,
+    Button,
     SmallBlind,
     BigBlind
 }

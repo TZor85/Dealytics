@@ -1,27 +1,26 @@
 ﻿using Ardalis.Result;
 using Marten;
 
-namespace Dealytics.Features.Action.CreateAll;
+namespace Dealytics.Features.Table.Create;
 
-public class CreateAllActions
+public class CreateTable
 {
     readonly IDocumentStore _documentStore;
 
-    public CreateAllActions(IDocumentStore documentStore)
+    public CreateTable(IDocumentStore documentStore)
     {
         _documentStore = documentStore;
     }
 
-    public async Task<Result> ExecuteAsync(CreateAllActionsRequest request, CancellationToken ct = default)
+    public async Task<Result> ExecuteAsync(CreateTableRequest request, CancellationToken ct = default)
     {
         try
         {
             using var session = _documentStore.LightweightSession();
-            foreach (var action in request.Actions)
-            {
-                session.Store(action);
-            }
+
+            session.Store(request.Action);
             await session.SaveChangesAsync(ct);
+
             return Result.Success();
         }
         catch (Exception ex)
@@ -29,4 +28,5 @@ public class CreateAllActions
             return Result.CriticalError(ex.Message);
         }
     }
+
 }

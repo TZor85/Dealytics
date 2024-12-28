@@ -8,12 +8,12 @@ using Dealytics.Domain.Entities;
 using Dealytics.Domain.Enum;
 using Dealytics.Domain.Mappers;
 using Dealytics.Domain.ValueObjects;
-using Dealytics.Features.Action;
 using Dealytics.Features.Action.CreateAll;
 using Dealytics.Features.Card;
 using Dealytics.Features.Card.CreateAll;
 using Dealytics.Features.Regions;
 using Dealytics.Features.Regions.CreateAll;
+using Dealytics.Features.Table;
 using Emgu.CV.Dnn;
 using Marten;
 using Marten.Linq.MatchesSql;
@@ -33,7 +33,7 @@ public partial class FrmMain : Form
     #region UseCases
     private RegionUseCases _regionUseCases;
     private CardUseCases _cardUseCases;
-    private ActionUseCases _actionUseCases;
+    private TableUseCases _actionUseCases;
     #endregion
 
 
@@ -87,7 +87,7 @@ public partial class FrmMain : Form
     public FrmMain(IDocumentStore store,
         RegionUseCases regionUseCases,
         CardUseCases cardUseCases,
-        ActionUseCases actionUseCases)
+        TableUseCases actionUseCases)
     {
 
         InitializeComponent();
@@ -284,7 +284,7 @@ public partial class FrmMain : Form
                 actions.Add(actionsDto.ToEntity());
                 await Task.Run(async () =>
                 {
-                    await _actionUseCases.CreateAllActions.ExecuteAsync(new CreateAllActionsRequest(actions));
+                    await _actionUseCases.CreateAllActions.ExecuteAsync(new CreateAllTablesRequest(actions));
                 });
 
                 lbMessageHands.Text = "Manos inicializadas correctamente";
@@ -439,8 +439,6 @@ public partial class FrmMain : Form
             }
         }
     }
-
-
 
     // Opcional: Navegación con teclas
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -1351,8 +1349,6 @@ public partial class FrmMain : Form
     }
 
     #endregion
-
-
 
 
     private string GetActiveDealer()
