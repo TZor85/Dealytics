@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             tcMain = new TabControl();
             tpGame = new TabPage();
+            btnPrueba = new Button();
             comboBox1 = new ComboBox();
             pbImageGame = new PictureBox();
             tpConfig = new TabPage();
@@ -88,6 +89,7 @@
             button3 = new Button();
             button2 = new Button();
             tpDebug = new TabPage();
+            lbAction = new Label();
             btnImageDebug = new Button();
             btnNextDebug = new Button();
             btnPreviousDebug = new Button();
@@ -199,6 +201,7 @@
             // 
             // tpGame
             // 
+            tpGame.Controls.Add(btnPrueba);
             tpGame.Controls.Add(comboBox1);
             tpGame.Controls.Add(pbImageGame);
             tpGame.Location = new Point(4, 24);
@@ -208,6 +211,16 @@
             tpGame.TabIndex = 0;
             tpGame.Text = "Juego";
             tpGame.UseVisualStyleBackColor = true;
+            // 
+            // btnPrueba
+            // 
+            btnPrueba.Location = new Point(17, 76);
+            btnPrueba.Name = "btnPrueba";
+            btnPrueba.Size = new Size(75, 23);
+            btnPrueba.TabIndex = 3;
+            btnPrueba.Text = "button1";
+            btnPrueba.UseVisualStyleBackColor = true;
+            btnPrueba.Click += btnPrueba_Click;
             // 
             // comboBox1
             // 
@@ -794,6 +807,7 @@
             // 
             // tpDebug
             // 
+            tpDebug.Controls.Add(lbAction);
             tpDebug.Controls.Add(btnImageDebug);
             tpDebug.Controls.Add(btnNextDebug);
             tpDebug.Controls.Add(btnPreviousDebug);
@@ -805,6 +819,15 @@
             tpDebug.TabIndex = 2;
             tpDebug.Text = "Debug";
             tpDebug.UseVisualStyleBackColor = true;
+            // 
+            // lbAction
+            // 
+            lbAction.AutoSize = true;
+            lbAction.Location = new Point(433, 20);
+            lbAction.Name = "lbAction";
+            lbAction.Size = new Size(38, 15);
+            lbAction.TabIndex = 18;
+            lbAction.Text = "label8";
             // 
             // btnImageDebug
             // 
@@ -1429,6 +1452,7 @@
             ((System.ComponentModel.ISupportInitialize)dgvHands).EndInit();
             tbInit.ResumeLayout(false);
             tpDebug.ResumeLayout(false);
+            tpDebug.PerformLayout();
             panel3.ResumeLayout(false);
             panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pbUserCard1).EndInit();
@@ -1559,5 +1583,7 @@
         private Label lbUserBet;
         private PictureBox pbUserCard1;
         private PictureBox pbUserCard0;
+        private Button btnPrueba;
+        private Label lbAction;
     }
 }

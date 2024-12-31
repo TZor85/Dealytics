@@ -1,5 +1,5 @@
 ﻿using Dealytics.Domain.Entities;
-using Dealytics.Domain.Enum;
+using Dealytics.Domain.Enums;
 
 namespace Dealytics.Domain.ValueObjects;
 
@@ -12,6 +12,8 @@ public class Player
     public bool IsPlaying { get; set; }
     public bool IsEmpty { get; set; }
     public bool IsSitOut { get; set; }
+    public TablePosition Position { get; set; }
+
 }
 
 public class Board : Card
@@ -26,6 +28,7 @@ public class UserData
     public Card CardFace0 { get; set; } = new Card { Id = string.Empty };
     public Card CardFace1 { get; set; } = new Card { Id = string.Empty };
     public bool Action { get; set; }
+    public TablePosition Position { get; set; }
 }
 
 public class TableData

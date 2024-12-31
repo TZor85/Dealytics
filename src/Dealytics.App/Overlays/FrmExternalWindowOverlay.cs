@@ -6,7 +6,7 @@ namespace Dealytics.App.Overlays
     public class FrmExternalWindowOverlay : Form
     {
         [DllImport("user32.dll")]
-        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        private static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
 
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
@@ -39,7 +39,6 @@ namespace Dealytics.App.Overlays
         {
             WindowTitle = windowTitle;
             targetWindowHandle = FindWindow(null, windowTitle);
-            //MessageBox.Show($"Handle: {targetWindowHandle}, Título buscado: {windowTitle}");
             if (targetWindowHandle != IntPtr.Zero)
             {
                 InitializeForm();

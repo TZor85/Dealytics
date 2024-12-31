@@ -1,4 +1,4 @@
-﻿using Dealytics.Domain.Enum;
+﻿using Dealytics.Domain.Enums;
 
 namespace Dealytics.Domain.ValueObjects;
 

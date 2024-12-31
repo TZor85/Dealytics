@@ -1,5 +1,5 @@
-﻿using Dealytics.Domain.Enum;
-using Dealytics.Domain.Entities;
+﻿using Dealytics.Domain.Entities;
+using Dealytics.Domain.Enums;
 
 namespace Dealytics.Domain.ValueObjects;
 

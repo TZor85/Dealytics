@@ -6,6 +6,7 @@ using Dealytics.Features.InitialConfig.Card;
 using Dealytics.Features.InitialConfig.Region;
 using Dealytics.Features.InitialConfig.Table;
 using Dealytics.Features.InitialConfig.TableMap;
+using Dealytics.Features.PokerScenario.Get;
 using Dealytics.Features.Regions;
 using Dealytics.Features.Regions.CreateAll;
 using Dealytics.Features.Regions.Update;
@@ -34,6 +35,8 @@ namespace Dealytics.Features
             .AddScoped<CreateAllTables>()
             .AddScoped<GetTable>()
             .AddScoped<TableUseCases>()
+
+            .AddScoped<GetPokerScenario>()
 
             .AddScoped<GetAllRegions>()
             .AddScoped<LoadAllCards>()

@@ -5,18 +5,18 @@ using Dealytics.App.Overlays;
 using Dealytics.App.Services;
 using Dealytics.Domain.Dtos;
 using Dealytics.Domain.Entities;
-using Dealytics.Domain.Enum;
+using Dealytics.Domain.Enums;
 using Dealytics.Domain.Mappers;
 using Dealytics.Domain.ValueObjects;
-using Dealytics.Features.Action.CreateAll;
 using Dealytics.Features.Card;
 using Dealytics.Features.Card.CreateAll;
+using Dealytics.Features.PokerScenario;
+using Dealytics.Features.PokerScenario.Get;
 using Dealytics.Features.Regions;
 using Dealytics.Features.Regions.CreateAll;
 using Dealytics.Features.Table;
-using Emgu.CV.Dnn;
+using Dealytics.Features.Table.CreateAll;
 using Marten;
-using Marten.Linq.MatchesSql;
 using PokerVisionAI.App.Services;
 using SkiaSharp;
 using System.Runtime.InteropServices;
@@ -34,17 +34,18 @@ public partial class FrmMain : Form
     private RegionUseCases _regionUseCases;
     private CardUseCases _cardUseCases;
     private TableUseCases _actionUseCases;
+    private GetPokerScenario? _pokerScenario;
     #endregion
 
 
-    private IReadOnlyList<Table> _tables;
-    private List<Table> _dataTables;
+    private IReadOnlyList<Table>? _tables;
+    private List<Table>? _dataTables;
     private Rectangle currentRectangle;
     private bool shouldDrawRectangle = false;
     private Domain.ValueObjects.Region? _selectedRegion;
 
     #region DataToLoad
-    private List<RegionCategory> _regionsCategories;
+    private List<RegionCategory>? _regionsCategories;
     private Result<List<Domain.Dtos.CardDTO>?> _cardsImages;
 
     #endregion
@@ -71,7 +72,7 @@ public partial class FrmMain : Form
     private double _inactiveUmbral = 0;
 
 
-    private Dictionary<nint, FrmExternalWindowOverlay> activeOverlays = new Dictionary<nint, FrmExternalWindowOverlay>();
+    private Dictionary<nint, (FrmExternalWindowOverlay, DataRegions)> activeOverlays = new Dictionary<nint, (FrmExternalWindowOverlay, DataRegions)>();
 
     [DllImport("user32.dll")]
     private static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
@@ -87,7 +88,8 @@ public partial class FrmMain : Form
     public FrmMain(IDocumentStore store,
         RegionUseCases regionUseCases,
         CardUseCases cardUseCases,
-        TableUseCases actionUseCases)
+        TableUseCases actionUseCases,
+        GetPokerScenario pokerScenario)
     {
 
         InitializeComponent();
@@ -99,8 +101,9 @@ public partial class FrmMain : Form
         _regionUseCases = regionUseCases;
         _cardUseCases = cardUseCases;
         _actionUseCases = actionUseCases;
+        _pokerScenario = pokerScenario;
 
-        _bettingRound = new BettingRound(Domain.Enum.BettingRoundType.PreFlop, new List<BettingAction>(), new List<Card>());
+        _bettingRound = new BettingRound(BettingRoundType.PreFlop, new List<BettingAction>(), new List<Card>());
 
 
         monitor.OnWindowChanged += Monitor_OnWindowChanged;
@@ -165,7 +168,7 @@ public partial class FrmMain : Form
             if (overlay.IsTargetWindowValid())
             {
                 overlay.Show();
-                activeOverlays.Add(e.Handle, overlay);
+                activeOverlays.Add(e.Handle, (overlay, new DataRegions()));
 
                 overlay.FormClosed += (s, args) =>
                 {
@@ -179,7 +182,7 @@ public partial class FrmMain : Form
         SaveImage(image);
         pbImageGame.Image = image;
 
-        await Task.Run(async () => await ObtainDataTable());
+        await Task.Run(async () => await ObtainDataTable(e.Handle));
     }
 
 
@@ -716,7 +719,7 @@ public partial class FrmMain : Form
         }
     }
 
-    private async Task ObtainDataTable(bool debug = false)
+    private async Task ObtainDataTable(nint? table = null, bool debug = false)
     {
         _dataRegions = new DataRegions();
         LoadNames(debug);
@@ -728,6 +731,33 @@ public partial class FrmMain : Form
         LoadSitout(debug);
         LoadTable(debug);
         await LoadUser(debug);
+        
+
+        if (table != null)
+        {
+            activeOverlays[table.GetValueOrDefault()] = (activeOverlays[table.GetValueOrDefault()].Item1, _dataRegions);
+            var situationGame = GetGameSituation(_dataRegions);
+
+            if (situationGame.GameSituation != GameSituation.None)
+            {
+                var request = new PokerScenarioRequest
+                {
+                    HandName = $"{_dataRegions.User.CardFace0.Id}{_dataRegions.User.CardFace1.Id}",
+                    Suited = _dataRegions.User.CardFace0.Suit == _dataRegions.User.CardFace1.Suit,
+                    HeroPosition = GetHeroTablePosition(_dataRegions),
+                    OpenRaiser = situationGame.OpenRaiser,
+                    ThreeBetPosition = situationGame.ThreeBetPosition,
+                    Limper = situationGame.Limper,
+                    Caller = situationGame.Caller,
+                    Squeezer = situationGame.Squeezer
+                };
+
+                var result = await _pokerScenario.ExecuteAsync(situationGame.GameSituation, request);
+
+                //Editar el label de la ventana
+                activeOverlays[table.GetValueOrDefault()].Item1.UpdateLabel1(result);
+            }
+        }
 
         if (debug)
         {
@@ -743,12 +773,178 @@ public partial class FrmMain : Form
         }
     }
 
+    private GameSituationHandResponse? GetGameSituation(DataRegions data)
+    {
+        if (ExistOpenRaise(data).Item1)
+            return ExistOpenRaise(data).Item2;
+
+        if (ExistLimper(data).Item1)
+            return ExistLimper(data).Item2;
+
+        if (!ExistOpenRaise(data).Item1)
+            return ExistOpenRaise(data).Item2;
+
+
+
+
+        return null;
+    }
+
+    #region GameSituations
+    private (bool, GameSituationHandResponse) ExistOpenRaise(DataRegions data)
+    {
+        var response = new GameSituationHandResponse { GameSituation =  GameSituation.None };
+        var existOpenraise = false;
+        
+        var (smallBlind, bigBlind) = GetBlinds(data);
+        var blindIds = new[] { smallBlind.Id, bigBlind.Id };
+
+        var player = data.Players?.FirstOrDefault(p => p.Bet > 0 && !blindIds.Contains(p.Id));
+
+        if (player != null)
+        {
+            existOpenraise = true;
+            response.GameSituation = GameSituation.ThreeBet;
+        }
+        else
+            response.GameSituation = GameSituation.OpenRaise;
+
+        response.OpenRaiser = player?.Position ?? null;
+
+        return (existOpenraise, response);
+    }
+
+    private (bool, GameSituationHandResponse) ExistLimper(DataRegions data)
+    {
+        var response = new GameSituationHandResponse { GameSituation = GameSituation.None };
+        var existLimper = false;
+
+        var (smallBlind, bigBlind) = GetBlinds(data);
+        var blindIds = new[] { smallBlind.Id, bigBlind.Id };
+
+        var player = data.Players?.FirstOrDefault(p => p.Bet == 1 && !blindIds.Contains(p.Id));
+
+        if(player != null)
+        {
+            existLimper = true;
+            response.GameSituation = GameSituation.RaiseOverLimpers;
+        }
+
+        return (existLimper, response);
+    }
+
+    private (Player SmallBlind, Player BigBlind) GetBlinds(DataRegions data)
+    {
+        if (data?.Players == null || data.User == null)
+            throw new ArgumentNullException(nameof(data));
+
+        // Encontrar la posición del dealer teniendo en cuenta al usuario
+        int dealerPosition;
+        if (data.User.IsDealer)
+        {
+            dealerPosition = 0;
+        }
+        else
+        {
+            dealerPosition = data.Players.FindIndex(p => p.IsDealer);
+            if (dealerPosition == -1)
+                throw new Exception("Dealer not found");
+            dealerPosition++; // Ajustamos porque P1 está en posición 0 de la lista
+        }
+
+        // Calcular posiciones de SB y BB
+        var sbPosition = GetNextPosition(dealerPosition);
+        var bbPosition = GetNextPosition(sbPosition);
+
+        // Obtener los jugadores en esas posiciones
+        Player smallBlind, bigBlind;
+
+        if (sbPosition == 0)
+            smallBlind = new Player { Id = "P0" }; // Usuario es SB
+        else
+            smallBlind = data.Players[sbPosition - 1];
+
+        if (bbPosition == 0)
+            bigBlind = new Player { Id = "P0" }; // Usuario es BB
+        else
+            bigBlind = data.Players[bbPosition - 1];
+
+        return (smallBlind, bigBlind);
+    }
+
+    private int GetNextPosition(int currentPosition)
+    {
+        return (currentPosition + 1) % 6; // 6 es el total de jugadores (5 en Players + P0)
+    }
+
+    private TablePosition GetHeroTablePosition(DataRegions data)
+    {
+        if (data.Players[0].IsDealer)
+        {
+            data.Players[0].Position = TablePosition.Button;
+            data.Players[1].Position = TablePosition.SmallBlind;
+            data.Players[2].Position = TablePosition.BigBlind;
+            data.Players[3].Position = TablePosition.Early;
+            data.Players[4].Position = TablePosition.Middle;
+
+            return TablePosition.CutOff;
+        }
+
+        if (data.Players[1].IsDealer)
+        {
+            data.Players[0].Position = TablePosition.CutOff;
+            data.Players[1].Position = TablePosition.Button;
+            data.Players[2].Position = TablePosition.SmallBlind;
+            data.Players[3].Position = TablePosition.BigBlind;
+            data.Players[4].Position = TablePosition.Early;
+
+            return TablePosition.Middle;
+        }
+
+        if (data.Players[2].IsDealer)
+        {
+            data.Players[0].Position = TablePosition.Middle;
+            data.Players[1].Position = TablePosition.CutOff;
+            data.Players[2].Position = TablePosition.Button;
+            data.Players[3].Position = TablePosition.SmallBlind;
+            data.Players[4].Position = TablePosition.BigBlind;
+
+            return TablePosition.Early;
+        }
+
+        if (data.Players[3].IsDealer)
+        {
+            data.Players[0].Position = TablePosition.Early;
+            data.Players[1].Position = TablePosition.Middle;
+            data.Players[2].Position = TablePosition.CutOff;
+            data.Players[3].Position = TablePosition.Button;
+            data.Players[4].Position = TablePosition.SmallBlind;
+
+            return TablePosition.BigBlind;
+        }
+
+        if (data.Players[4].IsDealer)
+        {
+            data.Players[0].Position = TablePosition.BigBlind;
+            data.Players[1].Position = TablePosition.Early;
+            data.Players[2].Position = TablePosition.Middle;
+            data.Players[3].Position = TablePosition.CutOff;
+            data.Players[4].Position = TablePosition.Button;
+
+            return TablePosition.SmallBlind;
+        }
+
+        return TablePosition.None;
+    }
+
+    #endregion
+
     #region Debug
 
 
     private async void btnDebugManual_Click(object sender, EventArgs e)
     {
-        await Task.Run(async () => await ObtainDataTable(true));
+        await Task.Run(async () => await ObtainDataTable(null, true));
     }
 
     private void btnNamesDebug_Click(object sender, EventArgs e)
@@ -1301,7 +1497,7 @@ public partial class FrmMain : Form
         return fallbackOcr.Text;
     }
 
-    
+
 
     private async Task<CardDTO?> FindBestMatchingCard(string imageToCompare, IEnumerable<CardDTO> cards, bool debug)
     {
@@ -1423,7 +1619,20 @@ public partial class FrmMain : Form
         }
     }
 
-    
+    private async void btnPrueba_Click(object sender, EventArgs e)
+    {
+        var pp = await Task.Run(async () =>
+        
+            await _pokerScenario.ExecuteAsync(GameSituation.ThreeBet, new Features.PokerScenario.PokerScenarioRequest
+            {
+                HandName = "K6",
+                Suited = true,
+                HeroPosition = TablePosition.BigBlind,
+                OpenRaiser = TablePosition.Middle,
+            }));
+
+        var ppp = pp;
+    }
 }
 
 
@@ -1436,4 +1645,15 @@ public class WindowInfo
     {
         return Title;
     }
+}
+
+public class GameSituationHandResponse
+{
+    public required GameSituation GameSituation { get; set; }
+    public TablePosition? HeroPosition { get; set; }
+    public TablePosition? OpenRaiser { get; set; }
+    public TablePosition? ThreeBetPosition { get; set; }
+    public TablePosition? Limper { get; set; }
+    public TablePosition? Caller { get; set; }
+    public TablePosition? Squeezer { get; set; }
 }

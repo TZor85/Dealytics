@@ -149,7 +149,7 @@ public class ImageCropperService
         var bytes2 = bmp2.GetBytes();
 
         // Procesar los bytes de 4 en 4 (ARGB)
-        for (int i = 0; i < bytes1.Length; i += 4)
+        for (int i = 0; i < bytes1?.Length; i += 4)
         {
             if (IsPixelSimilar(bytes1, bytes2, i))
             {
@@ -161,8 +161,13 @@ public class ImageCropperService
         return porcentajeSimilitud >= SimilarityThreshold ? porcentajeSimilitud : 0;
     }
 
-    private bool IsPixelSimilar(byte[] pixels1, byte[] pixels2, int offset)
+    private bool IsPixelSimilar(byte[] pixels1, byte[]? pixels2, int offset)
     {
+        if (pixels2 == null)
+        {
+            return false;
+        }
+
         return Math.Abs(pixels1[offset + 2] - pixels2[offset + 2]) <= DefaultTolerance && // R
                Math.Abs(pixels1[offset + 1] - pixels2[offset + 1]) <= DefaultTolerance && // G
                Math.Abs(pixels1[offset] - pixels2[offset]) <= DefaultTolerance;   // B
@@ -215,8 +220,8 @@ public class ImageCropperService
 public class FastBitmap : IDisposable
 {
     private readonly Bitmap _bitmap;
-    private BitmapData _bitmapData;
-    private byte[] _bytes;
+    private BitmapData? _bitmapData;
+    private byte[]? _bytes;
 
     public int Width => _bitmap.Width;
     public int Height => _bitmap.Height;
@@ -237,7 +242,7 @@ public class FastBitmap : IDisposable
         Marshal.Copy(_bitmapData.Scan0, _bytes, 0, bytes);
     }
 
-    public byte[] GetBytes()
+    public byte[]? GetBytes()
     {
         return _bytes;
     }

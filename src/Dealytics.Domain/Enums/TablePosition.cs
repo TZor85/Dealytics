@@ -1,10 +1,10 @@
-﻿namespace Dealytics.Domain.Enum;
+﻿namespace Dealytics.Domain.Enums;
 
 public enum TablePosition
 {
     None,
-    EarlyPosition,
-    MiddlePosition,
+    Early,
+    Middle,
     CutOff,
     Button,
     SmallBlind,

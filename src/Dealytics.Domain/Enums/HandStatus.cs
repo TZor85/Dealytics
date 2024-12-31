@@ -1,4 +1,4 @@
-﻿namespace Dealytics.Domain.Enum;
+﻿namespace Dealytics.Domain.Enums;
 
 public enum HandStatus
 {
