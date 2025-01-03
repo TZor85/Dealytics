@@ -12,7 +12,7 @@ namespace Dealytics.Domain.Enums
         BigBlindVsSmallBlind,
         [Description("RaiseOverLimpers")]
         RaiseOverLimpers,
-        [Description("Cold4Bet")]
+        [Description("ColdFourBet")]
         Cold4Bet,
         [Description("FourBet")]
         FourBet,

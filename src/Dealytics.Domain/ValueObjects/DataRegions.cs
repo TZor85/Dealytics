@@ -29,6 +29,9 @@ public class UserData
     public Card CardFace1 { get; set; } = new Card { Id = string.Empty };
     public bool Action { get; set; }
     public TablePosition Position { get; set; }
+    public decimal LastBet { get; set; }  // La última apuesta del usuario
+    public bool IsActionOnUser { get; set; }  // Si la acción está en el usuario
+    public int ActionCount { get; set; }  // Número de veces que el usuario ha actuado en esta mano
 }
 
 public class TableData
@@ -37,6 +40,7 @@ public class TableData
     public string Hand { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public decimal Pot { get; set; }
+    public string LastRaiser { get; set; } = string.Empty;  // ID del último jugador que subió
 }
 
 public class DataRegions

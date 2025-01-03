@@ -43,6 +43,7 @@ public partial class FrmMain : Form
     private Rectangle currentRectangle;
     private bool shouldDrawRectangle = false;
     private Domain.ValueObjects.Region? _selectedRegion;
+    private Player? _smallBlind, _bigBlind;
 
     #region DataToLoad
     private List<RegionCategory>? _regionsCategories;
@@ -734,17 +735,17 @@ public partial class FrmMain : Form
         
 
         if (table != null)
-        {
-            activeOverlays[table.GetValueOrDefault()] = (activeOverlays[table.GetValueOrDefault()].Item1, _dataRegions);
+        {            
+            var heroPosition = GetHeroTablePosition(_dataRegions);
             var situationGame = GetGameSituation(_dataRegions);
 
             if (situationGame.GameSituation != GameSituation.None)
             {
                 var request = new PokerScenarioRequest
                 {
-                    HandName = $"{_dataRegions.User.CardFace0.Id}{_dataRegions.User.CardFace1.Id}",
-                    Suited = _dataRegions.User.CardFace0.Suit == _dataRegions.User.CardFace1.Suit,
-                    HeroPosition = GetHeroTablePosition(_dataRegions),
+                    HandName = $"{_dataRegions.User.CardFace0.Id[0]}{_dataRegions.User.CardFace1.Id[0]}",
+                    Suited = _dataRegions.User.CardFace0.Force == _dataRegions.User.CardFace1.Force ? null : _dataRegions.User.CardFace0.Suit == _dataRegions.User.CardFace1.Suit,
+                    HeroPosition = heroPosition,
                     OpenRaiser = situationGame.OpenRaiser,
                     ThreeBetPosition = situationGame.ThreeBetPosition,
                     Limper = situationGame.Limper,
@@ -754,8 +755,27 @@ public partial class FrmMain : Form
 
                 var result = await _pokerScenario.ExecuteAsync(situationGame.GameSituation, request);
 
+                if( result != "Fold")
+                    _dataRegions.User.ActionCount++;
+
+                if(table != nint.Zero)
+                    activeOverlays[table.GetValueOrDefault()] = (activeOverlays[table.GetValueOrDefault()].Item1, _dataRegions);
+
+                if (lbUserAction.InvokeRequired)
+                {
+                    this.Invoke((MethodInvoker)delegate {
+                        lbUserAction.Text = $"Action--: {result}";
+                        lbUserAction.Refresh();
+                    });
+                }
+                else
+                {
+                    lbUserAction.Text = $"Action: {result}";
+                    lbUserAction.Refresh();
+                }
+
                 //Editar el label de la ventana
-                activeOverlays[table.GetValueOrDefault()].Item1.UpdateLabel1(result);
+                //activeOverlays[table.GetValueOrDefault()].Item1.UpdateLabel1(result);
             }
         }
 
@@ -775,41 +795,155 @@ public partial class FrmMain : Form
 
     private GameSituationHandResponse? GetGameSituation(DataRegions data)
     {
-        if (ExistOpenRaise(data).Item1)
-            return ExistOpenRaise(data).Item2;
+        var response = new GameSituationHandResponse { GameSituation = GameSituation.None };
 
-        if (ExistLimper(data).Item1)
-            return ExistLimper(data).Item2;
+        if (!SomeoneRaisedOurBet(data))
+        {
+            var (hasOpenRaise, openRaiseAction) = ExistOpenRaise(data);
+            if (hasOpenRaise)
+                response = openRaiseAction;
 
-        if (!ExistOpenRaise(data).Item1)
-            return ExistOpenRaise(data).Item2;
+            var (hasLimper, limperAction) = ExistLimper(data);
+            if (hasLimper)
+                response = limperAction;
 
+            var (has4Bet, fourBetAction) = ExistColdFourBetAction(data);
+            if (has4Bet)
+                response = fourBetAction;
+        }
+        else 
+        {
+            var (hasOpenRaiseVs3Bet, openRaiseVs3BetAction) = ExistOpenRaiseVs3BetAction(data);
+            if (hasOpenRaiseVs3Bet)
+                response = openRaiseVs3BetAction;
+        }
+        
+        //GetOpenRaiseVs3BetAction
+        _smallBlind = null;
+        _bigBlind = null;
 
+        return response;
+    }
 
+    private bool SomeoneRaisedOurBet(DataRegions data)
+    {
+        var (smallBlind, bigBlind) = GetBlinds(data);
+        var blindIds = new[] { smallBlind.Id, bigBlind.Id };
 
-        return null;
+        // Caso 1: Alguien ha subido nuestra apuesta
+        bool someoneRaisedOurBet = data.User?.Bet > 0 && !blindIds.Contains("P0") &&
+                                  (data.Players?.Any(p =>
+                                      !p.IsEmpty &&
+                                      p.Bet > data.User?.Bet
+                                  ) ?? false);
+
+        //// Caso 2: Hay una apuesta activa y aún no hemos actuado
+        //bool thereIsActiveRaise = data.Players?.Any(p =>
+        //    !p.IsEmpty &&
+        //    !blindIds.Contains(p.Id) &&
+        //    p.Bet > data.User?.Bet
+        //) ?? false;
+
+        // Si se cumple cualquiera de los casos anteriores, el usuario debe tomar una decisión
+        return someoneRaisedOurBet;// || thereIsActiveRaise;
     }
 
     #region GameSituations
+    private (bool, GameSituationHandResponse) ExistColdFourBetAction(DataRegions data)
+    {
+        var response = new GameSituationHandResponse { GameSituation = GameSituation.None };
+        var existFourBet = false;
+
+        var (smallBlind, bigBlind) = GetBlinds(data);
+        var blindIds = new[] { smallBlind.Id, bigBlind.Id };
+
+        // Primero verificamos si el usuario hizo open raise
+        var someonOpenRaised = data.Players?.FirstOrDefault(f => f.Bet > 1);
+        if (someonOpenRaised == null)
+            return (false, response);
+
+        // Luego verificamos si algún jugador tiene una apuesta mayor que la del usuario
+        var someoneReraised = data.Players?.FirstOrDefault(p =>
+            !p.IsEmpty &&
+            p.Bet > someonOpenRaised.Bet);
+
+        if (someoneReraised != null)
+        {
+            existFourBet = true;
+            response.GameSituation = GameSituation.Cold4Bet;
+        }
+
+        response.OpenRaiser = someonOpenRaised?.Position ?? null;
+        response.ThreeBetPosition = someoneReraised?.Position ?? null;
+        return (existFourBet, response);
+    }
+
+    private (bool, GameSituationHandResponse) ExistOpenRaiseVs3BetAction(DataRegions data)
+    {
+        var response = new GameSituationHandResponse { GameSituation = GameSituation.None };
+        var existOpenraise = false;
+
+        var (smallBlind, bigBlind) = GetBlinds(data);
+        var blindIds = new[] { smallBlind.Id, bigBlind.Id };
+
+        // Primero verificamos si el usuario hizo open raise
+        bool userOpenRaised = data.User?.Bet > 1 && !blindIds.Contains("P0");
+
+        if (!userOpenRaised)
+            return (false, response);
+
+        // Luego verificamos si algún jugador tiene una apuesta mayor que la del usuario
+        bool someoneReraised = data.Players?.Any(p =>
+            !blindIds.Contains(p.Id) &&
+            !p.IsEmpty &&
+            p.Bet > data.User.Bet
+        ) ?? false;
+
+        if(someoneReraised)
+        {
+            existOpenraise = true;
+            response.GameSituation = GameSituation.VsThreeBet;
+        }
+
+        response.OpenRaiser = data.User?.Position ?? null;
+        return (existOpenraise, response);
+    }
+
     private (bool, GameSituationHandResponse) ExistOpenRaise(DataRegions data)
     {
         var response = new GameSituationHandResponse { GameSituation =  GameSituation.None };
         var existOpenraise = false;
-        
+        bool existsHigherBet = false;
+
+
         var (smallBlind, bigBlind) = GetBlinds(data);
         var blindIds = new[] { smallBlind.Id, bigBlind.Id };
 
-        var player = data.Players?.FirstOrDefault(p => p.Bet > 0 && !blindIds.Contains(p.Id));
+        var firstPlayer = data.Players?.FirstOrDefault(p => p.Bet > 1 && !blindIds.Contains(p.Id));
 
-        if (player != null)
+        if (firstPlayer != null)
         {
-            existOpenraise = true;
-            response.GameSituation = GameSituation.ThreeBet;
-        }
+            if (data.User?.Bet == 0)
+            {
+                // Buscamos si existe algún jugador con Bet mayor que el primero
+                existsHigherBet = data.Players?.Any(p =>
+                    p.Id != firstPlayer.Id && // Que no sea el mismo jugador
+                    !blindIds.Contains(p.Id) && // Que no sea un blind
+                    p.Bet > 1 && // Que tenga Bet > 1
+                    p.Bet > firstPlayer.Bet // Que tenga una apuesta mayor que el primero
+                ) ?? false;
+            }
+
+            if (!existsHigherBet)
+            {
+                existOpenraise = true;
+                response.GameSituation = GameSituation.ThreeBet;
+            }
+        }        
         else
             response.GameSituation = GameSituation.OpenRaise;
 
-        response.OpenRaiser = player?.Position ?? null;
+        response.OpenRaiser = firstPlayer?.Position ?? null;
 
         return (existOpenraise, response);
     }
@@ -830,46 +964,53 @@ public partial class FrmMain : Form
             response.GameSituation = GameSituation.RaiseOverLimpers;
         }
 
+        //response.Limper = player?.Position ?? null;
+
         return (existLimper, response);
     }
 
     private (Player SmallBlind, Player BigBlind) GetBlinds(DataRegions data)
     {
-        if (data?.Players == null || data.User == null)
-            throw new ArgumentNullException(nameof(data));
-
-        // Encontrar la posición del dealer teniendo en cuenta al usuario
-        int dealerPosition;
-        if (data.User.IsDealer)
+        if (_smallBlind == null && _bigBlind == null)
         {
-            dealerPosition = 0;
+            if (data?.Players == null || data.User == null)
+                throw new ArgumentNullException(nameof(data));
+
+            // Encontrar la posición del dealer teniendo en cuenta al usuario
+            int dealerPosition;
+            if (data.User.IsDealer)
+            {
+                dealerPosition = 0;
+            }
+            else
+            {
+                dealerPosition = data.Players.FindIndex(p => p.IsDealer);
+                if (dealerPosition == -1)
+                    throw new Exception("Dealer not found");
+                dealerPosition++; // Ajustamos porque P1 está en posición 0 de la lista
+            }
+
+            // Calcular posiciones de SB y BB
+            var sbPosition = GetNextPosition(dealerPosition);
+            var bbPosition = GetNextPosition(sbPosition);
+
+            // Obtener los jugadores en esas posiciones
+            //Player smallBlind, bigBlind;
+
+            if (sbPosition == 0)
+                _smallBlind = new Player { Id = "P0" }; // Usuario es SB
+            else
+                _smallBlind = data.Players[sbPosition - 1];
+
+            if (bbPosition == 0)
+                _bigBlind = new Player { Id = "P0" }; // Usuario es BB
+            else
+                _bigBlind = data.Players[bbPosition - 1];
+
+            return (_smallBlind, _bigBlind);
         }
-        else
-        {
-            dealerPosition = data.Players.FindIndex(p => p.IsDealer);
-            if (dealerPosition == -1)
-                throw new Exception("Dealer not found");
-            dealerPosition++; // Ajustamos porque P1 está en posición 0 de la lista
-        }
 
-        // Calcular posiciones de SB y BB
-        var sbPosition = GetNextPosition(dealerPosition);
-        var bbPosition = GetNextPosition(sbPosition);
-
-        // Obtener los jugadores en esas posiciones
-        Player smallBlind, bigBlind;
-
-        if (sbPosition == 0)
-            smallBlind = new Player { Id = "P0" }; // Usuario es SB
-        else
-            smallBlind = data.Players[sbPosition - 1];
-
-        if (bbPosition == 0)
-            bigBlind = new Player { Id = "P0" }; // Usuario es BB
-        else
-            bigBlind = data.Players[bbPosition - 1];
-
-        return (smallBlind, bigBlind);
+        return (_smallBlind, _bigBlind);
     }
 
     private int GetNextPosition(int currentPosition)
@@ -944,7 +1085,7 @@ public partial class FrmMain : Form
 
     private async void btnDebugManual_Click(object sender, EventArgs e)
     {
-        await Task.Run(async () => await ObtainDataTable(null, true));
+        await Task.Run(async () => await ObtainDataTable(new nint(), true));
     }
 
     private void btnNamesDebug_Click(object sender, EventArgs e)
@@ -1002,6 +1143,12 @@ public partial class FrmMain : Form
 
     private void ObtainNames()
     {
+        if (InvokeRequired)
+        {
+            Invoke(new Action(ObtainNames));
+            return;
+        }
+
         lbP1Name.Text = $"P1: {_dataRegions.Players?[0].Name} ";
         lbP2Name.Text = $"P2: {_dataRegions.Players?[1].Name}";
         lbP3Name.Text = $"P3: {_dataRegions.Players?[2].Name}";
@@ -1011,6 +1158,12 @@ public partial class FrmMain : Form
 
     private void ObtainBoard()
     {
+        if (InvokeRequired)
+        {
+            Invoke(new Action(ObtainBoard));
+            return;
+        }
+
         if (!string.IsNullOrEmpty(_dataRegions.BoardCards?[0].ImageBase64))
             pbCard1.Image = _imageCropperService.Base64ToImage(_dataRegions.BoardCards?[0].ImageBase64 ?? string.Empty);
 
@@ -1029,11 +1182,23 @@ public partial class FrmMain : Form
 
     private void ObtainDealer()
     {
+        if (InvokeRequired)
+        {
+            Invoke(new Action(ObtainDealer));
+            return;
+        }
+
         lbDealerDebug.Text = GetActiveDealer() ?? string.Empty;
     }
 
     private void ObtainBets()
     {
+        if (InvokeRequired)
+        {
+            Invoke(new Action(ObtainBets));
+            return;
+        }
+
         lbP1Bet.Text = $"P1: {_dataRegions.Players?[0].Bet.ToString()}";
         lbP2Bet.Text = $"P2: {_dataRegions.Players?[1].Bet.ToString()}";
         lbP3Bet.Text = $"P3: {_dataRegions.Players?[2].Bet.ToString()}";
@@ -1043,6 +1208,12 @@ public partial class FrmMain : Form
 
     private void ObtainPlaying()
     {
+        if (InvokeRequired)
+        {
+            Invoke(new Action(ObtainPlaying));
+            return;
+        }
+
         lbP1Playing.Text = $"P1: {(_dataRegions.Players?[0].IsPlaying == true ? "Playing" : "Folded")}";
         lbP1Playing.ForeColor = _dataRegions.Players?[0].IsPlaying == true ? Color.Green : Color.Red;
 
@@ -1062,6 +1233,12 @@ public partial class FrmMain : Form
 
     private void ObtainEmpty()
     {
+        if (InvokeRequired)
+        {
+            Invoke(new Action(ObtainEmpty));
+            return;
+        }
+
         lbP1Empty.Text = $"P1: {(_dataRegions.Players?[0].IsEmpty == true ? "Empty" : "Not Empty")}";
         lbP1Empty.ForeColor = _dataRegions.Players?[0].IsPlaying == true ? Color.Green : Color.Red;
 
@@ -1081,6 +1258,12 @@ public partial class FrmMain : Form
 
     private void ObtainSitOut()
     {
+        if (InvokeRequired)
+        {
+            Invoke(new Action(ObtainSitOut));
+            return;
+        }
+
         lbP1Sitout.Text = $"P1: {(_dataRegions.Players?[0].IsSitOut == true ? "SitOut" : "Not SitOut")}";
         lbP1Sitout.ForeColor = _dataRegions.Players?[0].IsSitOut == true ? Color.Green : Color.Red;
 
@@ -1099,6 +1282,12 @@ public partial class FrmMain : Form
 
     private void ObtainTable()
     {
+        if (InvokeRequired)
+        {
+            Invoke(new Action(ObtainTable));
+            return;
+        }
+
         lbTableName.Text = new string(_dataRegions.Table?.Name.Where(char.IsLetter).ToArray());
         lbTableHand.Text = _dataRegions.Table?.Hand;
         lbPot.Text = _dataRegions.Table?.Pot.ToString();
@@ -1107,8 +1296,14 @@ public partial class FrmMain : Form
 
     private void ObtainUser()
     {
+        if (InvokeRequired)
+        {
+            Invoke(new Action(ObtainUser));
+            return;
+        }
+
         lbUserBet.Text = $"Bet: {_dataRegions.User?.Bet.ToString()}";
-        lbUserAction.Text = _dataRegions.User?.Action == true ? "Action" : "No Action";
+        //lbUserAction.Text = _dataRegions.User?.Action == true ? "Action" : "No Action";
         if (!string.IsNullOrEmpty(_dataRegions.User?.CardFace0.ImageBase64))
             pbUserCard0.Image = _imageCropperService.Base64ToImage(_dataRegions.User.CardFace0.ImageBase64);
         if (!string.IsNullOrEmpty(_dataRegions.User?.CardFace1.ImageBase64))

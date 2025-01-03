@@ -9,7 +9,7 @@ public enum ActionType
     ThreeBet,
     FourBet,
     Cold4Bet,
-    Squueze,
+    Squeeze,
     Raise,
     AllIn
 }
