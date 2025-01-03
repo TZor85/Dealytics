@@ -764,7 +764,7 @@ public partial class FrmMain : Form
                 if (lbUserAction.InvokeRequired)
                 {
                     this.Invoke((MethodInvoker)delegate {
-                        lbUserAction.Text = $"Action--: {result}";
+                        lbUserAction.Text = $"Action: {result}";
                         lbUserAction.Refresh();
                     });
                 }
